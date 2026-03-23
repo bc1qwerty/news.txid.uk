@@ -227,3 +227,112 @@ body {
 .dark .prose img {
   border-color: #262626;
 }
+
+/* ─── Admin Editor ─── */
+.ed-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #a3a3a3;
+  margin-bottom: 0.25rem;
+}
+
+.ed-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e5e5;
+  background: white;
+  color: #171717;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ed-input:focus {
+  border-color: #F7931A;
+}
+
+.dark .ed-input {
+  background: #141414;
+  border-color: #262626;
+  color: #fafafa;
+}
+
+.dark .ed-input:focus {
+  border-color: #F7931A;
+}
+
+.ed-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.dark .ed-split {
+  border-color: #262626;
+}
+
+@media (min-width: 1024px) {
+  .ed-split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ed-pane {
+  min-height: 500px;
+}
+
+.ed-pane + .ed-pane {
+  border-top: 1px solid #e5e5e5;
+}
+
+.dark .ed-pane + .ed-pane {
+  border-top-color: #262626;
+}
+
+@media (min-width: 1024px) {
+  .ed-pane + .ed-pane {
+    border-top: none;
+    border-left: 1px solid #e5e5e5;
+  }
+
+  .dark .ed-pane + .ed-pane {
+    border-left-color: #262626;
+  }
+}
+
+.ed-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: #d4d4d4;
+  background: #0d0d0d;
+  border: none;
+  outline: none;
+  resize: vertical;
+  tab-size: 2;
+}
+
+.ed-textarea::placeholder {
+  color: #404040;
+}
+
+[data-theme="light"] .ed-textarea,
+:root:not(.dark) .ed-textarea {
+  color: #171717;
+  background: #fafafa;
+}
+
+[data-theme="light"] .ed-textarea::placeholder,
+:root:not(.dark) .ed-textarea::placeholder {
+  color: #a3a3a3;
+}
