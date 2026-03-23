@@ -16,11 +16,13 @@ const files = fs
   .sort()
   .reverse();
 
-const posts = files.map((file) => {
-  const content = fs.readFileSync(path.join(postsDir, file), "utf8");
-  const { data } = matter(content);
-  return { slug: file.replace(".mdx", ""), ...data };
-});
+const posts = files
+  .map((file) => {
+    const content = fs.readFileSync(path.join(postsDir, file), "utf8");
+    const { data } = matter(content);
+    return { slug: file.replace(".mdx", ""), ...data };
+  })
+  .filter((p) => p.draft !== true);
 
 const escapeXml = (str) =>
   String(str)
@@ -58,3 +60,28 @@ const rss = `<?xml version="1.0" encoding="UTF-8"?>
 fs.mkdirSync(path.dirname(outFile), { recursive: true });
 fs.writeFileSync(outFile, rss.trim());
 console.log("RSS feed generated:", outFile);
+
+// Generate drafts.json for admin page
+const allPosts = files.map((file) => {
+  const content = fs.readFileSync(path.join(postsDir, file), "utf8");
+  const { data } = matter(content);
+  return { slug: file.replace(".mdx", ""), ...data };
+});
+
+const drafts = allPosts
+  .filter((p) => p.draft === true)
+  .map((p) => ({
+    slug: p.slug,
+    title: p.title || p.slug,
+    date: p.date || "",
+    category: p.category || "opinion",
+    summary: p.summary || "",
+  }));
+
+const draftsDir = path.join(__dirname, "..", "public", "admin");
+fs.mkdirSync(draftsDir, { recursive: true });
+fs.writeFileSync(
+  path.join(draftsDir, "drafts.json"),
+  JSON.stringify(drafts, null, 2)
+);
+console.log("Drafts JSON generated:", drafts.length, "drafts");

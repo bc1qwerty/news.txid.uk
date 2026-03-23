@@ -59,6 +59,7 @@ category: "${category}"
 tags: []
 summary: ""
 author: "txid"
+draft: true
 ---
 
 `;
@@ -66,4 +67,7 @@ author: "txid"
 fs.writeFileSync(filepath, template);
 console.log(`Created: src/content/posts/${filename}`);
 console.log(`Category: ${category}`);
-console.log(`\nEdit the file and run \`npm run deploy\` when ready.`);
+console.log(`Status: DRAFT (will not be published)`);
+console.log(`\nWhen ready to publish:`);
+console.log(`  1. Set "draft: false" in the frontmatter`);
+console.log(`  2. Run \`npm run deploy\` or push to GitHub`);

@@ -27,6 +27,7 @@ body {
   font-family: var(--font-sans);
 }
 
+/* ─── Dark Prose Tokens ─── */
 .dark .prose {
   --tw-prose-body: #d4d4d4;
   --tw-prose-headings: #fafafa;
@@ -44,12 +45,178 @@ body {
   --tw-prose-pre-code: #d4d4d4;
 }
 
+/* ─── Headings ─── */
+.prose h2 {
+  position: relative;
+  padding-bottom: 0.6rem;
+  margin-top: 2.5em;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.dark .prose h2 {
+  border-bottom-color: #262626;
+}
+
+.prose h2::before {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 3rem;
+  height: 2px;
+  background: #F7931A;
+}
+
+.prose h3 {
+  margin-top: 2em;
+  padding-left: 0.75rem;
+  border-left: 3px solid #F7931A;
+}
+
+/* ─── Links ─── */
 .prose a {
   text-decoration: none;
+  color: #F7931A;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .prose a:hover {
   border-bottom-color: #F7931A;
+  color: #E8850F;
+}
+
+/* ─── Blockquotes ─── */
+.prose blockquote {
+  border-left-width: 3px;
+  border-left-color: #F7931A;
+  background: rgba(247, 147, 26, 0.04);
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-style: normal;
+}
+
+.dark .prose blockquote {
+  background: rgba(247, 147, 26, 0.06);
+}
+
+.prose blockquote p:first-child {
+  margin-top: 0;
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Inline Code ─── */
+.prose :not(pre) > code {
+  background: #f5f5f5;
+  padding: 0.15em 0.35em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-weight: 500;
+  border: 1px solid #e5e5e5;
+}
+
+.dark .prose :not(pre) > code {
+  background: #1c1c1c;
+  border-color: #333;
+}
+
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
+}
+
+/* ─── Code Blocks ─── */
+.prose pre {
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem;
+}
+
+.dark .prose pre {
+  border-color: #262626;
+}
+
+/* ─── Lists ─── */
+.prose ul > li::marker {
+  color: #F7931A;
+}
+
+.prose ol > li::marker {
+  color: #F7931A;
+  font-weight: 600;
+}
+
+.prose li {
+  margin-top: 0.35em;
+  margin-bottom: 0.35em;
+}
+
+/* ─── Horizontal Rule ─── */
+.prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #d4d4d4, transparent);
+  margin: 2.5em 0;
+}
+
+.dark .prose hr {
+  background: linear-gradient(to right, transparent, #404040, transparent);
+}
+
+/* ─── Strong ─── */
+.prose strong {
+  font-weight: 700;
+  color: #171717;
+}
+
+.dark .prose strong {
+  color: #fafafa;
+}
+
+/* ─── First Paragraph Lead ─── */
+.prose > p:first-child {
+  font-size: 1.125em;
+  line-height: 1.75;
+  color: #404040;
+}
+
+.dark .prose > p:first-child {
+  color: #d4d4d4;
+}
+
+/* ─── Tables ─── */
+.prose table {
+  border-collapse: collapse;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.prose thead th {
+  background: #f5f5f5;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dark .prose thead th {
+  background: #1a1a1a;
+}
+
+.prose tbody tr {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.dark .prose tbody tr {
+  border-bottom-color: #262626;
+}
+
+/* ─── Images ─── */
+.prose img {
+  border-radius: 0.75rem;
+  border: 1px solid #e5e5e5;
+}
+
+.dark .prose img {
+  border-color: #262626;
 }

@@ -23,37 +23,54 @@ export interface Post extends PostMeta {
   content: string;
 }
 
-export function getAllPosts(): Post[] {
+interface RawPost extends Post {
+  draft: boolean;
+}
+
+function readAllPosts(): RawPost[] {
   if (!fs.existsSync(postsDirectory)) return [];
 
   const files = fs
     .readdirSync(postsDirectory)
     .filter((f) => f.endsWith(".mdx"));
 
-  const posts = files.map((filename) => {
-    const slug = filename.replace(/\.mdx$/, "");
-    const filePath = path.join(postsDirectory, filename);
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const { data, content } = matter(fileContents);
-    const stats = readingTime(content);
+  return files
+    .map((filename) => {
+      const slug = filename.replace(/\.mdx$/, "");
+      const filePath = path.join(postsDirectory, filename);
+      const fileContents = fs.readFileSync(filePath, "utf8");
+      const { data, content } = matter(fileContents);
+      const stats = readingTime(content);
 
-    return {
-      slug,
-      title: data.title,
-      date: data.date,
-      category: data.category as Category,
-      tags: data.tags || [],
-      summary: data.summary || "",
-      thumbnail: data.thumbnail,
-      author: data.author || "txid",
-      readingTime: stats.text,
-      content,
-    };
-  });
+      return {
+        slug,
+        title: data.title || slug,
+        date: data.date || new Date().toISOString().split("T")[0],
+        draft: data.draft === true,
+        category: (data.category as Category) || "opinion",
+        tags: data.tags || [],
+        summary: data.summary || "",
+        thumbnail: data.thumbnail,
+        author: data.author || "txid",
+        readingTime: stats.text,
+        content,
+      };
+    })
+    .sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+}
 
-  return posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+export function getAllPosts(): Post[] {
+  return readAllPosts().filter((p) => !p.draft);
+}
+
+export function getAllDrafts(): Post[] {
+  return readAllPosts().filter((p) => p.draft);
+}
+
+export function getDraftBySlug(slug: string): Post | undefined {
+  return getAllDrafts().find((p) => p.slug === slug);
 }
 
 export function getPostBySlug(slug: string): Post | undefined {
