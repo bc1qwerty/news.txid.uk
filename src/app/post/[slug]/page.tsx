@@ -8,12 +8,13 @@ import { CATEGORIES, SITE_URL, safeJsonLd } from "@/lib/constants";
 import CategoryBadge from "@/components/CategoryBadge";
 import ShareButtons from "@/components/ShareButtons";
 import Sidebar from "@/components/Sidebar";
+import LeftSidebar from "@/components/LeftSidebar";
 import ReadingProgress from "@/components/ReadingProgress";
-import StickyTOC from "@/components/StickyTOC";
 import TableOfContents from "@/components/TableOfContents";
 import { extractHeadings } from "@/lib/toc";
 import RelatedPosts from "@/components/RelatedPosts";
 import SubscribeCTA from "@/components/SubscribeCTA";
+import DiscussionWidget from "@/components/DiscussionWidget";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -147,18 +148,18 @@ export default async function PostPage({
       />
       <ReadingProgress />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-[1400px] mx-auto px-4 py-8">
         <div
-          className={`lg:grid lg:gap-10 ${
+          className={`lg:grid lg:gap-8 ${
             hasTOC
-              ? "xl:grid-cols-[200px_1fr_280px] lg:grid-cols-[1fr_280px]"
-              : "lg:grid-cols-[1fr_280px]"
+              ? "xl:grid-cols-[220px_1fr_340px] lg:grid-cols-[1fr_320px]"
+              : "lg:grid-cols-[1fr_320px]"
           }`}
         >
-          {/* Left TOC — xl only */}
+          {/* Left: TOC + Sidebar info — xl only */}
           {hasTOC && (
             <div className="hidden xl:block">
-              <StickyTOC headings={headings} />
+              <LeftSidebar headings={headings} hasTOC={hasTOC} currentSlug={post.slug} />
             </div>
           )}
 
@@ -251,9 +252,16 @@ export default async function PostPage({
             <RelatedPosts posts={related} />
           </article>
 
-          {/* Right Sidebar */}
+          {/* Right: Discussion */}
           <div className="mt-10 lg:mt-0">
-            <Sidebar currentSlug={post.slug} />
+            <DiscussionWidget
+              sourceUrl={`/post/${post.slug}`}
+              sourceSite="news"
+            />
+            {/* Sidebar fallback for non-xl (below discussion on lg) */}
+            <div className="xl:hidden mt-8">
+              <Sidebar currentSlug={post.slug} />
+            </div>
           </div>
         </div>
       </div>
