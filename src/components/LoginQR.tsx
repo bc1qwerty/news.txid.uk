@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-
-const API = "https://api.txid.uk";
+import { useState, useEffect, useRef } from "react";
+import { API_URL } from "@/lib/constants";
 
 export default function LoginQR({ onLogin }: { onLogin: () => void }) {
   const [qr, setQr] = useState("");
@@ -10,45 +9,57 @@ export default function LoginQR({ onLogin }: { onLogin: () => void }) {
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading"
   );
-
-  const startLogin = useCallback(async () => {
-    try {
-      setStatus("loading");
-      const res = await fetch(`${API}/auth/challenge`);
-      const data = await res.json();
-      setQr(data.qr);
-      setLnurl(data.lnurl);
-      setStatus("ready");
-
-      const es = new EventSource(`${API}/auth/status/${data.k1}`, {
-        withCredentials: true,
-      });
-
-      es.onmessage = async (e) => {
-        const msg = JSON.parse(e.data);
-        if (msg.sessionToken) {
-          es.close();
-          await fetch(`${API}/auth/session`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ token: msg.sessionToken }),
-          });
-          onLogin();
-        }
-      };
-
-      es.onerror = () => {
-        es.close();
-      };
-    } catch {
-      setStatus("error");
-    }
-  }, [onLogin]);
+  const esRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
-    startLogin();
-  }, [startLogin]);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setStatus("loading");
+        const res = await fetch(`${API_URL}/auth/challenge`);
+        const data = await res.json();
+        if (cancelled) return;
+        setQr(data.qr);
+        setLnurl(data.lnurl);
+        setStatus("ready");
+
+        const es = new EventSource(`${API_URL}/auth/status/${data.k1}`, {
+          withCredentials: true,
+        });
+        esRef.current = es;
+
+        es.onmessage = async (e) => {
+          try {
+            const msg = JSON.parse(e.data);
+            if (typeof msg.sessionToken === "string" && msg.sessionToken) {
+              es.close();
+              await fetch(`${API_URL}/auth/session`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ token: msg.sessionToken }),
+              });
+              onLogin();
+            }
+          } catch {
+            // ignore malformed SSE messages
+          }
+        };
+
+        es.onerror = () => {
+          es.close();
+        };
+      } catch {
+        if (!cancelled) setStatus("error");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      esRef.current?.close();
+    };
+  }, [onLogin]);
 
   if (status === "loading") {
     return (
@@ -60,12 +71,6 @@ export default function LoginQR({ onLogin }: { onLogin: () => void }) {
     return (
       <div className="text-center py-8">
         <p className="text-neutral-400 mb-4">Failed to load login</p>
-        <button
-          onClick={startLogin}
-          className="text-sm text-bitcoin hover:text-bitcoin-dark"
-        >
-          Retry
-        </button>
       </div>
     );
   }
@@ -79,7 +84,9 @@ export default function LoginQR({ onLogin }: { onLogin: () => void }) {
         <img
           src={qr}
           alt="LNURL-auth QR code"
-          className="mx-auto w-64 h-64 rounded-xl border border-neutral-200 dark:border-border bg-white p-2"
+          width={256}
+          height={256}
+          className="mx-auto rounded-xl border border-neutral-200 dark:border-border bg-white p-2"
         />
       )}
       <p className="mt-4 text-sm text-neutral-500 dark:text-muted">
@@ -87,9 +94,7 @@ export default function LoginQR({ onLogin }: { onLogin: () => void }) {
       </p>
       {lnurl && (
         <button
-          onClick={() => {
-            navigator.clipboard.writeText(lnurl);
-          }}
+          onClick={() => navigator.clipboard?.writeText(lnurl)}
           className="mt-2 text-xs text-neutral-400 hover:text-bitcoin transition"
         >
           Copy LNURL

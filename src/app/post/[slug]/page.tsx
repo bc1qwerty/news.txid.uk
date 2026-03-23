@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/posts";
-import { CATEGORIES, SITE_URL } from "@/lib/constants";
+import { CATEGORIES, SITE_URL, safeJsonLd } from "@/lib/constants";
 import CategoryBadge from "@/components/CategoryBadge";
 import ShareButtons from "@/components/ShareButtons";
 import Sidebar from "@/components/Sidebar";
@@ -143,7 +143,7 @@ export default async function PostPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <ReadingProgress />
 

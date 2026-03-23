@@ -20,7 +20,7 @@ export default function RelatedPosts({ posts }: { posts: PostMeta[] }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <CategoryBadge category={post.category} linked={false} />
-              <time className="text-xs text-neutral-400 dark:text-muted">
+              <time dateTime={post.date} className="text-xs text-neutral-400 dark:text-muted">
                 {format(new Date(post.date), "MMM d")}
               </time>
             </div>

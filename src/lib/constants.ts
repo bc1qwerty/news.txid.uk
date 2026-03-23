@@ -4,6 +4,11 @@ export const SITE_DESCRIPTION =
   "Bitcoin, Macro Economics & Politics — Independent Analysis";
 export const SITE_URL = "https://news.txid.uk";
 export const AUTHOR = "txid";
+export const API_URL = "https://api.txid.uk";
+
+export function safeJsonLd(obj: unknown): string {
+  return JSON.stringify(obj).replace(/<\//g, "<\\/");
+}
 
 export const CATEGORIES = {
   bitcoin: {

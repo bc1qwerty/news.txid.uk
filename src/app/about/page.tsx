@@ -23,7 +23,7 @@ export default function AboutPage() {
         About
       </h1>
 
-      <div className="prose prose-lg max-w-none dark:prose-invert">
+      <div className="prose prose-lg max-w-none">
         <p>
           <strong>TXID News</strong> is an independent blog focused on Bitcoin,
           macro economics, and the political landscape surrounding sound money.

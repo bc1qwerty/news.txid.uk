@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAllPosts, getPostsByCategories } from "@/lib/posts";
-import { CATEGORIES, SITE_TITLE, SITE_DESCRIPTION, SITE_URL, type Category } from "@/lib/constants";
+import { CATEGORIES, SITE_TITLE, SITE_DESCRIPTION, SITE_URL, safeJsonLd, type Category } from "@/lib/constants";
 import HeroPost from "@/components/HeroPost";
 import PostCard from "@/components/PostCard";
 import Sidebar from "@/components/Sidebar";
@@ -60,7 +60,7 @@ export default function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       <div className="max-w-7xl mx-auto px-4 py-8">

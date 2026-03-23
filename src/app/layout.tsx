@@ -74,10 +74,25 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 antialiased">
         <ThemeProvider>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-bitcoin focus:text-white focus:rounded-lg focus:text-sm">
+            Skip to content
+          </a>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">{children}</main>
           <Footer />
         </ThemeProvider>
+
+        {/* Auth SDK */}
+        <Script
+          src="https://api.txid.uk/txid-auth.js"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://api.txid.uk/txid-auth.css"
+          crossOrigin="anonymous"
+        />
 
         {/* Analytics */}
         <Script

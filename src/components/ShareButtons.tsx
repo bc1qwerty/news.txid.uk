@@ -25,12 +25,7 @@ export default function ShareButtons({
     try {
       await navigator.clipboard.writeText(url);
     } catch {
-      const input = document.createElement("input");
-      input.value = url;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand("copy");
-      document.body.removeChild(input);
+      // Clipboard API unavailable — user can copy from address bar
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

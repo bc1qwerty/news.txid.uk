@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypeSlug from "rehype-slug";
 import { getAllDrafts, getDraftBySlug } from "@/lib/posts";
-import { CATEGORIES } from "@/lib/constants";
 import CategoryBadge from "@/components/CategoryBadge";
 import StickyTOC from "@/components/StickyTOC";
 import TableOfContents from "@/components/TableOfContents";
@@ -46,7 +45,6 @@ export default async function DraftPage({
     redirect("/admin");
   }
 
-  const cat = CATEGORIES[post.category];
   const headings = extractHeadings(post.content);
   const hasTOC = headings.length >= 3;
 

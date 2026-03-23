@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-
-const API = "https://api.txid.uk";
+import { API_URL } from "@/lib/constants";
 
 export interface AuthUser {
   authenticated: boolean;
@@ -18,7 +17,7 @@ export function useAuth() {
 
   const check = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/auth/me`, { credentials: "include" });
+      const res = await fetch(`${API_URL}/auth/me`, { credentials: "include" });
       const data = await res.json();
       setUser(data);
     } catch {

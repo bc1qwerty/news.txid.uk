@@ -211,6 +211,13 @@ body {
   border-bottom-color: #262626;
 }
 
+/* ─── Focus ─── */
+:focus-visible {
+  outline: 2px solid #F7931A;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* ─── Images ─── */
 .prose img {
   border-radius: 0.75rem;
