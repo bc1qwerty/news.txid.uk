@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TXID News</title>
+    <link>https://news.txid.uk</link>
+    <description>Bitcoin, Macro Economics &amp; Politics — Independent Analysis</description>
+    <language>en</language>
+    <lastBuildDate>Mon, 23 Mar 2026 07:39:30 GMT</lastBuildDate>
+    <atom:link href="https://news.txid.uk/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title><![CDATA[Why Bitcoin, Not Crypto]]></title>
+      <link>https://news.txid.uk/post/2026-03-23-why-bitcoin-not-crypto</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-23-why-bitcoin-not-crypto</guid>
+      <pubDate>Mon, 23 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Bitcoin and 'crypto' are not the same thing. This distinction isn't tribal — it's structural. Here's why this publication covers Bitcoin exclusively, and why that matters for serious analysis.]]></description>
+      <category>opinion</category>
+    </item>
+  </channel>
+</rss>

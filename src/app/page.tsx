@@ -1,65 +1,127 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getAllPosts, getPostsByCategories } from "@/lib/posts";
+import { CATEGORIES, SITE_TITLE, SITE_DESCRIPTION, SITE_URL, type Category } from "@/lib/constants";
+import HeroPost from "@/components/HeroPost";
+import PostCard from "@/components/PostCard";
+import Sidebar from "@/components/Sidebar";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_TITLE,
+      description: SITE_DESCRIPTION,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_TITLE,
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/og-default.png`,
+      },
+    },
+  ],
+};
 
 export default function Home() {
+  const posts = getAllPosts();
+  const byCategory = getPostsByCategories();
+  const [heroPost, ...restPosts] = posts;
+
+  if (posts.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+        <h1 className="text-3xl font-bold mb-4">{SITE_TITLE}</h1>
+        <p className="text-neutral-500 dark:text-muted">{SITE_DESCRIPTION}</p>
+        <p className="mt-8 text-neutral-400">No posts yet. Check back soon.</p>
+      </div>
+    );
+  }
+
+  // Categories that have posts (excluding hero post)
+  const categorySections = (Object.keys(CATEGORIES) as Category[])
+    .map((key) => ({
+      key,
+      cat: CATEGORIES[key],
+      posts: byCategory[key].filter((p) => p.slug !== heroPost.slug),
+    }))
+    .filter((s) => s.posts.length > 0);
+
+  const hasEnoughForSections = posts.length >= 4;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h1 className="sr-only">
+          {SITE_TITLE} — {SITE_DESCRIPTION}
+        </h1>
+
+        {/* Hero */}
+        <section className="mb-10">
+          <HeroPost post={heroPost} />
+        </section>
+
+        {/* 2-column layout */}
+        <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-10">
+          <div>
+            {hasEnoughForSections && categorySections.length > 0 ? (
+              /* Category sections mode */
+              <div className="space-y-10">
+                {categorySections.map(({ key, cat, posts: catPosts }) => (
+                  <section key={key}>
+                    <div className="flex items-center justify-between mb-5">
+                      <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                        {cat.name}
+                      </h2>
+                      <Link
+                        href={`/category/${key}`}
+                        className="text-sm text-neutral-400 hover:text-bitcoin transition"
+                      >
+                        View all
+                      </Link>
+                    </div>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      {catPosts.slice(0, 4).map((post) => (
+                        <PostCard key={post.slug} post={post} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            ) : (
+              /* Simple chronological mode */
+              restPosts.length > 0 && (
+                <section>
+                  <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-5">
+                    Recent
+                  </h2>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    {restPosts.map((post) => (
+                      <PostCard key={post.slug} post={post} />
+                    ))}
+                  </div>
+                </section>
+              )
+            )}
+          </div>
+
+          <div className="mt-10 lg:mt-0">
+            <Sidebar />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
