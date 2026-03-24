@@ -1,0 +1,112 @@
+---
+title: "Bitcoin Hashrate Hits 800 EH/s: What It Means for Network Security"
+date: "2026-03-20"
+category: "bitcoin"
+tags: ["bitcoin", "hashrate", "mining", "network security", "ASIC", "difficulty"]
+summary: "Bitcoin's hashrate crossed 800 exahashes per second for the first time on March 18, doubling from 400 EH/s just eighteen months ago. Behind the headline number lies a structural shift in mining geography, hardware efficiency, and what it means for Bitcoin's security model."
+author: "txid"
+---
+
+On March 18, 2026, Bitcoin's seven-day moving average hashrate crossed 800 exahashes per second for the first time. That number — 800,000,000,000,000,000,000 hashes per second — is difficult to contextualize. It represents more computational work per second than every supercomputer on earth combined, dedicated to a single purpose: securing the Bitcoin ledger.
+
+The milestone itself is unremarkable in isolation. Hashrate has been climbing steadily for fifteen years. What makes this one worth examining is the speed of the doubling, the geography behind it, and the security implications at this scale.
+
+## The Acceleration
+
+Bitcoin's hashrate has roughly doubled every eighteen months for the past several years, but the absolute numbers are now staggering. Consider the trajectory:
+
+| Year | Approximate Hashrate | Time to Double |
+|---|---|---|
+| 2020 | 120 EH/s | ~24 months |
+| 2022 | 270 EH/s | ~20 months |
+| 2024 | 500 EH/s | ~18 months |
+| 2025 | 620 EH/s | — |
+| 2026 (March) | 800 EH/s | ~18 months |
+
+The 2024–2026 doubling is particularly notable because it occurred across a halving event. In April 2025, the block reward dropped from 6.25 to 3.125 BTC — cutting miner revenue from issuance in half. Historically, halvings cause hashrate to plateau or briefly decline as marginal miners shut down. This time, the growth barely paused.
+
+The explanation is hardware efficiency.
+
+## The Hardware Revolution
+
+Two machines dominate the current generation of Bitcoin ASICs: Bitmain's Antminer S21 XP and MicroBT's WhatsMiner M66S. Both represent a generational leap in energy efficiency.
+
+| ASIC Model | Efficiency (J/TH) | Hashrate | Release |
+|---|---|---|---|
+| Bitmain S19 Pro | 29.5 | 110 TH/s | 2020 |
+| Bitmain S19 XP | 21.5 | 140 TH/s | 2022 |
+| MicroBT M56S++ | 22.0 | 230 TH/s | 2024 |
+| Bitmain S21 XP | 13.5 | 270 TH/s | 2025 |
+| MicroBT M66S | 14.2 | 290 TH/s | 2025 |
+
+The S21 XP at 13.5 joules per terahash is more than twice as efficient as the S19 Pro that dominated mining floors three years ago. This means a miner replacing old hardware can double their hashrate while using the same electricity. It explains how hashrate can surge even when block rewards fall — the cost per hash is dropping faster than the reward per hash.
+
+For mining operations with access to cheap power (below $0.04/kWh), the current generation of hardware remains profitable even at current difficulty levels. The marginal cost of mining one Bitcoin with an S21 XP at $0.03/kWh electricity is roughly $28,000 — well below the current market price.
+
+## The Geography Shift
+
+China's mining ban in June 2021 was supposed to end Chinese dominance of Bitcoin hashrate. It did — publicly. The reality is more complicated.
+
+Current estimates of hashrate distribution:
+
+| Region | Estimated Share | Trend |
+|---|---|---|
+| United States | ~40% | Stable |
+| Russia | ~12% | Growing |
+| Kazakhstan | ~6% | Declining |
+| Canada | ~5% | Stable |
+| China (unofficial) | ~15% | Unclear |
+| Rest of world | ~22% | Growing |
+
+The United States consolidated its position as the dominant mining jurisdiction after 2021, driven by institutional capital, cheap natural gas, and regulatory clarity in states like Texas, Wyoming, and Georgia. Marathon Digital, Riot Platforms, and CleanSpark collectively operate over 80 EH/s of capacity within the US.
+
+Russia's share has grown quietly. The country's combination of cheap hydroelectric and nuclear power, cold climate, and a regulatory framework that tolerates mining (while taxing it) has attracted significant hashrate. Exact figures are difficult to verify.
+
+China's "hidden" capacity is the industry's open secret. Despite the official ban, researchers at Cambridge's Centre for Alternative Finance estimate that 12–18% of global hashrate still originates from China, running through VPN-obscured connections and registered under proxy companies in other jurisdictions. The machines never left; the IP addresses did.
+
+## Security at 800 EH/s
+
+The practical security question is straightforward: how much would it cost to attack the network?
+
+A sustained 51% attack — gaining majority hashrate to double-spend transactions — would require acquiring and operating roughly 400 EH/s of mining capacity. At current ASIC prices and availability, the hardware alone would cost over $12 billion. The electricity to run it, even briefly, adds billions more. Factor in the logistical impossibility of acquiring that volume of ASICs without crashing the supply chain, and realistic estimates for a sustained attack exceed **$20 billion**.
+
+This is not theoretical security. It is economic security — the cost of corruption exceeds the potential reward for any conceivable attacker, including nation-states. A government with $20 billion to spend on disrupting Bitcoin would find it far cheaper to regulate it out of existence within their borders than to attack the network directly.
+
+The difficulty adjustment mechanism ensures this security scales with participation. Every 2,016 blocks (roughly two weeks), the network recalibrates the mining difficulty to maintain the ten-minute block target. At 800 EH/s, difficulty has reached an all-time high of 114.7 trillion — meaning each individual hash has a 1 in 114.7 trillion chance of producing a valid block. The system self-corrects regardless of how much or how little hashrate is pointed at it.
+
+## The Centralization Concern
+
+Raw hashrate is only half the security equation. The other half is distribution.
+
+As of March 2026, the top three mining pools — Foundry USA, AntPool, and ViaBTC — collectively control approximately 55% of block production. Foundry alone produces roughly 28% of all blocks.
+
+| Mining Pool | Block Share | Approximate Hashrate |
+|---|---|---|
+| Foundry USA | ~28% | ~224 EH/s |
+| AntPool | ~16% | ~128 EH/s |
+| ViaBTC | ~11% | ~88 EH/s |
+| F2Pool | ~9% | ~72 EH/s |
+| Binance Pool | ~7% | ~56 EH/s |
+| Others | ~29% | ~232 EH/s |
+
+This concentration is concerning but nuanced. Mining pools are not monolithic entities — they are coordinators. The individual miners within a pool retain their hardware and can switch pools at any time. A pool operator attempting to censor transactions or execute an attack would see miners defect within minutes. The switching cost is near zero.
+
+Still, the theoretical risk of pool-level collusion is nonzero, and it grows as concentration increases.
+
+## Stratum V2 and Miner Sovereignty
+
+The most meaningful development in mining decentralization is not a new pool — it is a new protocol. **Stratum V2**, which has moved from pilot testing to gradual production deployment over the past year, shifts block template construction from pool operators to individual miners.
+
+Under the current Stratum protocol (V1), the pool operator decides which transactions go into a block. Miners just provide the hashpower. Under Stratum V2, miners construct their own block templates and submit them to the pool. The pool still coordinates reward distribution, but it loses the ability to censor or prioritize specific transactions.
+
+This is a fundamental architectural change. It means that even if three pools control 55% of hashrate, no single entity controls which transactions get confirmed — because the block-building power is distributed across thousands of individual mining operations.
+
+Adoption has been gradual. DEMAND, Ocean Mining, and Braiins Pool have implemented Stratum V2 support. Foundry USA announced testing in Q1 2026 but has not yet deployed it in production. The transition will take years, but the direction is clear: mining is moving toward a model where pools are settlement layers, not decision-makers.
+
+## What 800 EH/s Means
+
+The headline number is a proxy for something simpler: Bitcoin's security budget is the largest it has ever been, despite the halving cutting issuance in half. The network is spending more energy, more capital, and more hardware on securing the ledger than at any point in its history — and doing so more efficiently per hash than ever before.
+
+The concerns are real — geographic concentration in the US, pool concentration among three operators, and the environmental cost of 800 EH/s worth of electricity. None of these are existential. All of them are worth monitoring.
+
+But the core security proposition — that altering Bitcoin's transaction history is economically irrational for any actor on earth — has never been stronger. At 800 EH/s, the network is not just secure. It is prohibitively, absurdly, redundantly secure. And it will keep growing.
