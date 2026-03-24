@@ -3,10 +3,19 @@ import { format } from "date-fns";
 import CategoryBadge from "./CategoryBadge";
 import type { PostMeta } from "@/lib/posts";
 
+const heroGradient: Record<string, string> = {
+  bitcoin: "from-[#F7931A]/8 to-transparent dark:from-[#F7931A]/12",
+  macro: "from-[#3B82F6]/8 to-transparent dark:from-[#3B82F6]/12",
+  politics: "from-[#8B5CF6]/8 to-transparent dark:from-[#8B5CF6]/12",
+  opinion: "from-[#10B981]/8 to-transparent dark:from-[#10B981]/12",
+};
+
 export default function HeroPost({ post }: { post: PostMeta }) {
+  const gradient = heroGradient[post.category] || heroGradient.bitcoin;
+
   return (
     <article className="group border border-neutral-200 dark:border-border rounded-xl overflow-hidden bg-white dark:bg-surface hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors">
-      <Link href={`/post/${post.slug}`} className="block p-6 md:p-8">
+      <Link href={`/post/${post.slug}`} className={`block p-6 md:p-8 bg-gradient-to-br ${gradient}`}>
         <div className="flex items-center gap-3 mb-4">
           <CategoryBadge category={post.category} linked={false} />
           <time
@@ -23,7 +32,7 @@ export default function HeroPost({ post }: { post: PostMeta }) {
         <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white group-hover:text-bitcoin transition-colors leading-tight mb-3">
           {post.title}
         </h2>
-        <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-3xl">
+        <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-3xl line-clamp-3">
           {post.summary}
         </p>
         {post.tags.length > 0 && (

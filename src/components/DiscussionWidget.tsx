@@ -9,7 +9,6 @@ interface Author {
   pubkey: string;
   displayName: string | null;
   isAdmin: boolean;
-  selectedIcon: string | null;
 }
 
 interface Comment {
@@ -30,10 +29,13 @@ interface Post {
   voteScore: number;
   commentCount: number;
   createdAt: number;
-  sourceUrl: string;
-  sourceSite: string;
   author: Author;
   userVote?: number | null;
+}
+
+interface Discussion {
+  post: Post;
+  comments: Comment[];
 }
 
 interface Props {
@@ -51,33 +53,27 @@ function timeAgo(ts: number): string {
 }
 
 function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
   const { user, loading: authLoading } = useAuth();
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [body, setBody] = useState("");
-  const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [replyTo, setReplyTo] = useState<{ postId: number; commentId?: number } | null>(null);
   const [replyBody, setReplyBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDiscussion = useCallback(async () => {
+  const fetchDiscussions = useCallback(async () => {
     try {
       const res = await fetch(
         `${API_URL}/discussions?source_url=${encodeURIComponent(sourceUrl)}&source_site=${sourceSite}`,
         { credentials: "include" }
       );
       const data = await res.json();
-      setPost(data.post || null);
-      setComments(data.comments || []);
+      setDiscussions(data.discussions || []);
     } catch {
       // silent fail
     } finally {
@@ -86,12 +82,14 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
   }, [sourceUrl, sourceSite]);
 
   useEffect(() => {
-    fetchDiscussion();
-  }, [fetchDiscussion]);
+    fetchDiscussions();
+    const interval = setInterval(fetchDiscussions, 20000);
+    return () => clearInterval(interval);
+  }, [fetchDiscussions]);
 
-  async function handleSubmit(parentId: number | null = null) {
-    const text = parentId ? replyBody : body;
-    if (!text.trim() || submitting) return;
+  /** Post a new top-level comment (= new community post) */
+  async function handleNewComment() {
+    if (!body.trim() || submitting) return;
     setSubmitting(true);
     setError(null);
 
@@ -106,8 +104,7 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
         body: JSON.stringify({
           source_url: sourceUrl,
           source_site: sourceSite,
-          body: text.trim(),
-          parent_id: parentId,
+          body: body.trim(),
           lang: "en",
         }),
       });
@@ -118,14 +115,8 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
         return;
       }
 
-      // Refresh
-      if (parentId) {
-        setReplyBody("");
-        setReplyTo(null);
-      } else {
-        setBody("");
-      }
-      await fetchDiscussion();
+      setBody("");
+      await fetchDiscussions();
     } catch {
       setError("Network error");
     } finally {
@@ -133,36 +124,53 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
     }
   }
 
-  async function handleVote(
-    targetType: "post" | "comment",
-    targetId: number,
-    value: number
-  ) {
-    if (!user?.authenticated) return;
+  /** Reply to a community post (= add comment to that post) */
+  async function handleReply() {
+    if (!replyTo || !replyBody.trim() || submitting) return;
+    setSubmitting(true);
+    setError(null);
 
     try {
-      await fetch(
-        `${API_URL}/board/${targetType === "post" ? "posts" : "comments"}/${targetId}/vote`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": (user as AuthUser)?.csrfToken || "",
-          },
-          body: JSON.stringify({ value }),
-        }
-      );
-      await fetchDiscussion();
+      const res = await fetch(`${API_URL}/discussions`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": (user as AuthUser)?.csrfToken || "",
+        },
+        body: JSON.stringify({
+          source_url: sourceUrl,
+          source_site: sourceSite,
+          body: replyBody.trim(),
+          parent_post_id: replyTo.postId,
+          parent_id: replyTo.commentId || null,
+          lang: "en",
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to reply");
+        return;
+      }
+
+      setReplyBody("");
+      setReplyTo(null);
+      await fetchDiscussions();
     } catch {
-      // silent fail
+      setError("Network error");
+    } finally {
+      setSubmitting(false);
     }
   }
 
-  function totalCommentCount(): number {
-    let count = comments.length;
-    for (const c of comments) count += c.replies?.length || 0;
-    return count;
+  function totalCount(): number {
+    let n = discussions.length;
+    for (const d of discussions) {
+      n += d.comments.length;
+      for (const c of d.comments) n += c.replies?.length || 0;
+    }
+    return n;
   }
 
   if (loading) {
@@ -178,7 +186,7 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
     );
   }
 
-  const count = totalCommentCount();
+  const count = totalCount();
   const isLoggedIn = user?.authenticated;
 
   return (
@@ -187,21 +195,20 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
         Discussion{count > 0 ? ` (${count})` : ""}
       </h4>
 
-      {/* Comment list */}
-      {comments.length > 0 ? (
+      {/* Discussions = community posts rendered as comments */}
+      {discussions.length > 0 ? (
         <div className="space-y-4 mb-4">
-          {comments.map((c) => (
-            <CommentItem
-              key={c.id}
-              comment={c}
+          {discussions.map((d) => (
+            <DiscussionItem
+              key={d.post.id}
+              discussion={d}
               isLoggedIn={!!isLoggedIn}
               replyTo={replyTo}
               replyBody={replyBody}
               submitting={submitting}
               onReplyTo={setReplyTo}
               onReplyBodyChange={setReplyBody}
-              onSubmitReply={() => handleSubmit(c.id)}
-              onVote={handleVote}
+              onSubmitReply={handleReply}
             />
           ))}
         </div>
@@ -212,11 +219,9 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
       )}
 
       {/* Error */}
-      {error && (
-        <div className="text-xs text-red-500 mb-2">{error}</div>
-      )}
+      {error && <div className="text-xs text-red-500 mb-2">{error}</div>}
 
-      {/* Write form */}
+      {/* New comment form (= creates a new community post) */}
       {isLoggedIn ? (
         <div className="border-t border-neutral-200 dark:border-neutral-800 pt-3">
           <textarea
@@ -228,7 +233,7 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
             className="w-full text-sm p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 resize-none focus:outline-none focus:border-bitcoin transition"
           />
           <button
-            onClick={() => handleSubmit(null)}
+            onClick={handleNewComment}
             disabled={submitting || !body.trim()}
             className="mt-1.5 w-full text-sm font-medium py-1.5 rounded-lg bg-bitcoin text-white hover:bg-bitcoin-dark disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
@@ -250,22 +255,27 @@ export default function DiscussionWidget({ sourceUrl, sourceSite }: Props) {
         </div>
       )}
 
-      {/* Link to community (future) */}
-      {post && (
+      {/* Community link */}
+      {discussions.length > 0 && (
         <div className="mt-3 text-center">
-          <span className="text-[11px] text-neutral-400 dark:text-neutral-600">
-            Powered by TXID Community
-          </span>
+          <a
+            href={`https://community.txid.uk/post/${discussions[0].post.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-neutral-400 dark:text-neutral-600 hover:text-bitcoin transition"
+          >
+            View on Community →
+          </a>
         </div>
       )}
     </div>
   );
 }
 
-// ─── CommentItem ───
+// ─── DiscussionItem: community post rendered as a top-level comment ───
 
-function CommentItem({
-  comment,
+function DiscussionItem({
+  discussion,
   isLoggedIn,
   replyTo,
   replyBody,
@@ -273,158 +283,244 @@ function CommentItem({
   onReplyTo,
   onReplyBodyChange,
   onSubmitReply,
-  onVote,
 }: {
-  comment: Comment;
+  discussion: Discussion;
   isLoggedIn: boolean;
-  replyTo: number | null;
+  replyTo: { postId: number; commentId?: number } | null;
   replyBody: string;
   submitting: boolean;
-  onReplyTo: (id: number | null) => void;
+  onReplyTo: (v: { postId: number; commentId?: number } | null) => void;
   onReplyBodyChange: (v: string) => void;
   onSubmitReply: () => void;
-  onVote: (type: "post" | "comment", id: number, value: number) => void;
 }) {
-  const authorName = comment.author.displayName || comment.author.pubkey.slice(0, 8) + "...";
+  const { post, comments } = discussion;
+  const authorName = post.author.displayName || post.author.pubkey.slice(0, 8) + "...";
+  const isReplyingToThis = replyTo?.postId === post.id && !replyTo?.commentId;
 
   return (
     <div>
+      {/* Post as comment */}
       <div className="group">
         <div className="flex items-start gap-2">
-          {/* Vote */}
-          <div className="flex flex-col items-center gap-0.5 mt-0.5 min-w-[24px]">
-            <button
-              onClick={() =>
-                onVote("comment", comment.id, comment.userVote === 1 ? 0 : 1)
-              }
-              disabled={!isLoggedIn}
-              className={`text-xs leading-none p-0.5 rounded transition ${
-                comment.userVote === 1
-                  ? "text-bitcoin"
-                  : "text-neutral-400 dark:text-neutral-600 hover:text-bitcoin"
-              } disabled:cursor-default`}
-              title="Upvote"
-            >
-              &#9650;
-            </button>
-            <span
-              className={`text-[11px] font-medium ${
-                comment.voteScore > 0
-                  ? "text-bitcoin"
-                  : comment.voteScore < 0
-                    ? "text-red-400"
-                    : "text-neutral-400 dark:text-neutral-600"
-              }`}
-            >
-              {comment.voteScore}
-            </span>
-            <button
-              onClick={() =>
-                onVote("comment", comment.id, comment.userVote === -1 ? 0 : -1)
-              }
-              disabled={!isLoggedIn}
-              className={`text-xs leading-none p-0.5 rounded transition ${
-                comment.userVote === -1
-                  ? "text-red-400"
-                  : "text-neutral-400 dark:text-neutral-600 hover:text-red-400"
-              } disabled:cursor-default`}
-              title="Downvote"
-            >
-              &#9660;
-            </button>
+          {/* Avatar initial */}
+          <div className="w-6 h-6 rounded-full bg-bitcoin/15 flex items-center justify-center text-bitcoin text-[10px] font-bold shrink-0 mt-0.5">
+            {(post.author.displayName || post.author.pubkey)[0].toUpperCase()}
           </div>
 
-          {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-0.5">
               <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
                 {escapeHtml(authorName)}
               </span>
-              {comment.author.isAdmin && (
+              {post.author.isAdmin && (
                 <span className="text-[10px] px-1 py-px rounded bg-bitcoin/10 text-bitcoin font-medium">
                   Admin
                 </span>
               )}
               <span className="text-[11px] text-neutral-400 dark:text-neutral-600">
-                {timeAgo(comment.createdAt)}
+                {timeAgo(post.createdAt)}
               </span>
             </div>
             <p className="text-[13px] text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap break-words">
-              {comment.body}
+              {post.body}
             </p>
 
-            {/* Reply button */}
-            {isLoggedIn && (
-              <button
-                onClick={() =>
-                  onReplyTo(replyTo === comment.id ? null : comment.id)
-                }
-                className="text-[11px] text-neutral-400 dark:text-neutral-600 hover:text-bitcoin mt-1 transition"
+            {/* Reply + Community link */}
+            <div className="flex items-center gap-3 mt-1">
+              {isLoggedIn && (
+                <button
+                  onClick={() =>
+                    onReplyTo(isReplyingToThis ? null : { postId: post.id })
+                  }
+                  className="text-[11px] text-neutral-400 dark:text-neutral-600 hover:text-bitcoin transition"
+                >
+                  Reply
+                </button>
+              )}
+              <a
+                href={`https://community.txid.uk/post/${post.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-neutral-400 dark:text-neutral-600 hover:text-bitcoin transition"
               >
-                Reply
-              </button>
-            )}
+                #{post.id}
+              </a>
+            </div>
 
             {/* Reply form */}
-            {replyTo === comment.id && (
-              <div className="mt-2">
-                <textarea
-                  value={replyBody}
-                  onChange={(e) => onReplyBodyChange(e.target.value)}
-                  placeholder="Write a reply..."
-                  rows={2}
-                  maxLength={5000}
-                  className="w-full text-[13px] p-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 resize-none focus:outline-none focus:border-bitcoin transition"
-                />
-                <div className="flex gap-2 mt-1">
-                  <button
-                    onClick={onSubmitReply}
-                    disabled={submitting || !replyBody.trim()}
-                    className="text-[12px] font-medium px-3 py-1 rounded-md bg-bitcoin text-white hover:bg-bitcoin-dark disabled:opacity-40 transition"
-                  >
-                    {submitting ? "..." : "Reply"}
-                  </button>
-                  <button
-                    onClick={() => onReplyTo(null)}
-                    className="text-[12px] text-neutral-400 hover:text-neutral-600 transition"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+            {isReplyingToThis && (
+              <ReplyForm
+                body={replyBody}
+                submitting={submitting}
+                onChange={onReplyBodyChange}
+                onSubmit={onSubmitReply}
+                onCancel={() => onReplyTo(null)}
+              />
             )}
           </div>
         </div>
       </div>
 
-      {/* Nested replies */}
+      {/* Comments on this post = replies */}
+      {comments.length > 0 && (
+        <div className="ml-8 mt-2 pl-3 border-l-2 border-neutral-200 dark:border-neutral-800 space-y-3">
+          {comments.map((c) => (
+            <ReplyItem
+              key={c.id}
+              comment={c}
+              postId={post.id}
+              isLoggedIn={isLoggedIn}
+              replyTo={replyTo}
+              replyBody={replyBody}
+              submitting={submitting}
+              onReplyTo={onReplyTo}
+              onReplyBodyChange={onReplyBodyChange}
+              onSubmitReply={onSubmitReply}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── ReplyItem: comment on a community post rendered as a reply ───
+
+function ReplyItem({
+  comment,
+  postId,
+  isLoggedIn,
+  replyTo,
+  replyBody,
+  submitting,
+  onReplyTo,
+  onReplyBodyChange,
+  onSubmitReply,
+}: {
+  comment: Comment;
+  postId: number;
+  isLoggedIn: boolean;
+  replyTo: { postId: number; commentId?: number } | null;
+  replyBody: string;
+  submitting: boolean;
+  onReplyTo: (v: { postId: number; commentId?: number } | null) => void;
+  onReplyBodyChange: (v: string) => void;
+  onSubmitReply: () => void;
+}) {
+  const authorName = comment.author.displayName || comment.author.pubkey.slice(0, 8) + "...";
+  const isReplyingToThis = replyTo?.postId === postId && replyTo?.commentId === comment.id;
+
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+          {escapeHtml(authorName)}
+        </span>
+        {comment.author.isAdmin && (
+          <span className="text-[10px] px-1 py-px rounded bg-bitcoin/10 text-bitcoin font-medium">
+            Admin
+          </span>
+        )}
+        <span className="text-[11px] text-neutral-400 dark:text-neutral-600">
+          {timeAgo(comment.createdAt)}
+        </span>
+      </div>
+      <p className="text-[13px] text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap break-words">
+        {comment.body}
+      </p>
+
+      {isLoggedIn && (
+        <button
+          onClick={() =>
+            onReplyTo(
+              isReplyingToThis ? null : { postId, commentId: comment.id }
+            )
+          }
+          className="text-[11px] text-neutral-400 dark:text-neutral-600 hover:text-bitcoin mt-0.5 transition"
+        >
+          Reply
+        </button>
+      )}
+
+      {isReplyingToThis && (
+        <ReplyForm
+          body={replyBody}
+          submitting={submitting}
+          onChange={onReplyBodyChange}
+          onSubmit={onSubmitReply}
+          onCancel={() => onReplyTo(null)}
+        />
+      )}
+
+      {/* Nested replies (comment replies) */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-6 mt-2 pl-3 border-l-2 border-neutral-200 dark:border-neutral-800 space-y-3">
-          {comment.replies.map((reply) => (
-            <div key={reply.id}>
+        <div className="ml-4 mt-2 pl-3 border-l border-neutral-200 dark:border-neutral-800 space-y-2">
+          {comment.replies.map((r) => (
+            <div key={r.id}>
               <div className="flex items-center gap-1.5 mb-0.5">
                 <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                  {escapeHtml(
-                    reply.author.displayName ||
-                      reply.author.pubkey.slice(0, 8) + "..."
-                  )}
+                  {escapeHtml(r.author.displayName || r.author.pubkey.slice(0, 8) + "...")}
                 </span>
-                {reply.author.isAdmin && (
+                {r.author.isAdmin && (
                   <span className="text-[10px] px-1 py-px rounded bg-bitcoin/10 text-bitcoin font-medium">
                     Admin
                   </span>
                 )}
                 <span className="text-[11px] text-neutral-400 dark:text-neutral-600">
-                  {timeAgo(reply.createdAt)}
+                  {timeAgo(r.createdAt)}
                 </span>
               </div>
               <p className="text-[13px] text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap break-words">
-                {reply.body}
+                {r.body}
               </p>
             </div>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Shared reply form ───
+
+function ReplyForm({
+  body,
+  submitting,
+  onChange,
+  onSubmit,
+  onCancel,
+}: {
+  body: string;
+  submitting: boolean;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="mt-2">
+      <textarea
+        value={body}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Write a reply..."
+        rows={2}
+        maxLength={5000}
+        className="w-full text-[13px] p-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 resize-none focus:outline-none focus:border-bitcoin transition"
+      />
+      <div className="flex gap-2 mt-1">
+        <button
+          onClick={onSubmit}
+          disabled={submitting || !body.trim()}
+          className="text-[12px] font-medium px-3 py-1 rounded-md bg-bitcoin text-white hover:bg-bitcoin-dark disabled:opacity-40 transition"
+        >
+          {submitting ? "..." : "Reply"}
+        </button>
+        <button
+          onClick={onCancel}
+          className="text-[12px] text-neutral-400 hover:text-neutral-600 transition"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

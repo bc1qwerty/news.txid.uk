@@ -5,8 +5,24 @@
     <link>https://news.txid.uk</link>
     <description>Bitcoin, Macro Economics &amp; Politics — Independent Analysis</description>
     <language>en</language>
-    <lastBuildDate>Mon, 23 Mar 2026 08:29:17 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 24 Mar 2026 06:13:24 GMT</lastBuildDate>
     <atom:link href="https://news.txid.uk/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title><![CDATA[Crypto Finally Has a Rulebook: What the SEC-CFTC Joint Guidance Means]]></title>
+      <link>https://news.txid.uk/post/2026-03-24-sec-cftc-crypto-rulebook</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-24-sec-cftc-crypto-rulebook</guid>
+      <pubDate>Tue, 24 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[On March 17, the SEC and CFTC issued their first-ever joint guidance classifying 16 cryptocurrencies as digital commodities — not securities. Combined with the Senate's 89-10 CBDC ban, the US regulatory landscape has shifted more in one week than in the previous five years.]]></description>
+      <category>politics</category>
+    </item>
+    <item>
+      <title><![CDATA[Fed Holds, Bitcoin Waits: How Oil-Driven Inflation Is Reshaping the Macro Landscape]]></title>
+      <link>https://news.txid.uk/post/2026-03-24-fed-holds-bitcoin-waits</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-24-fed-holds-bitcoin-waits</guid>
+      <pubDate>Tue, 24 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[The Fed held rates at 3.50-3.75% on March 18, slashing its 2026 rate cut forecast to just one. With the Iran conflict pushing oil above $108 and PCE inflation revised to 2.7%, the liquidity catalyst Bitcoin bulls were counting on has been delayed indefinitely.]]></description>
+      <category>macro</category>
+    </item>
     <item>
       <title><![CDATA[Why Bitcoin, Not Crypto]]></title>
       <link>https://news.txid.uk/post/2026-03-23-why-bitcoin-not-crypto</link>
@@ -14,6 +30,14 @@
       <pubDate>Mon, 23 Mar 2026 00:00:00 GMT</pubDate>
       <description><![CDATA[Bitcoin and 'crypto' are not the same thing. This distinction isn't tribal — it's structural. Here's why this publication covers Bitcoin exclusively, and why that matters for serious analysis.]]></description>
       <category>opinion</category>
+    </item>
+    <item>
+      <title><![CDATA[Square's Default-On Lightning: The Biggest Bitcoin Payments Milestone Since El Salvador]]></title>
+      <link>https://news.txid.uk/post/2026-03-23-square-lightning-default-on</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-23-square-lightning-default-on</guid>
+      <pubDate>Mon, 23 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Starting March 30, Block's Square will enable Bitcoin Lightning payments by default across 4 million merchants worldwide. Zero fees through 2026, instant settlement, no chargebacks. This is the largest single merchant onboarding event in Lightning Network history.]]></description>
+      <category>bitcoin</category>
     </item>
   </channel>
 </rss>

@@ -85,12 +85,14 @@ export default function Home() {
                       <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
                         {cat.name}
                       </h2>
-                      <Link
-                        href={`/category/${key}`}
-                        className="text-sm text-neutral-400 hover:text-bitcoin transition"
-                      >
-                        View all
-                      </Link>
+                      {catPosts.length > 4 && (
+                        <Link
+                          href={`/category/${key}`}
+                          className="text-sm text-neutral-400 hover:text-bitcoin transition"
+                        >
+                          View all
+                        </Link>
+                      )}
                     </div>
                     <div className="grid gap-5 sm:grid-cols-2">
                       {catPosts.slice(0, 4).map((post) => (

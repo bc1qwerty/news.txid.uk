@@ -2,16 +2,10 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { CATEGORIES, type Category } from "@/lib/constants";
 import { getRecentPosts, getAllTags, getCategoryCounts } from "@/lib/posts";
-import StickyTOC from "./StickyTOC";
-import type { TocItem } from "@/lib/toc";
 
 export default function LeftSidebar({
-  headings,
-  hasTOC,
   currentSlug,
 }: {
-  headings: TocItem[];
-  hasTOC: boolean;
   currentSlug?: string;
 }) {
   const recentPosts = getRecentPosts(5, currentSlug);
@@ -26,10 +20,7 @@ export default function LeftSidebar({
   };
 
   return (
-    <aside className="sticky top-20 self-start space-y-6 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 scrollbar-thin">
-      {/* TOC */}
-      {hasTOC && <StickyTOC headings={headings} />}
-
+    <aside className="sticky top-20 self-start space-y-6">
       {/* Categories */}
       <section>
         <h4 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-2">
@@ -99,6 +90,25 @@ export default function LeftSidebar({
           </div>
         </section>
       )}
+
+      {/* NIP-05 Identity */}
+      <a
+        href="https://id.txid.uk/en/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block p-3 rounded-xl border border-bitcoin/20 bg-bitcoin/5 hover:bg-bitcoin/10 transition group"
+      >
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span className="text-sm">⚡</span>
+          <span className="text-xs font-semibold text-bitcoin">NIP-05 Identity</span>
+        </div>
+        <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed mb-1.5">
+          Get <span className="text-bitcoin font-mono font-medium">you@txid.uk</span>
+        </p>
+        <span className="text-[10px] text-bitcoin group-hover:underline">
+          Register →
+        </span>
+      </a>
     </aside>
   );
 }

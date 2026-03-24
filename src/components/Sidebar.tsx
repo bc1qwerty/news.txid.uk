@@ -24,24 +24,29 @@ export default function Sidebar({ currentSlug }: { currentSlug?: string }) {
           Categories
         </h3>
         <ul className="space-y-1.5">
-          {(Object.keys(CATEGORIES) as Category[]).map((key) => (
-            <li key={key}>
-              <Link
-                href={`/category/${key}`}
-                className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition py-1"
-              >
-                <span className="flex items-center gap-2">
-                  <span
-                    className={`w-2 h-2 rounded-full ${catColorDot[key]}`}
-                  />
-                  {CATEGORIES[key].name}
-                </span>
-                <span className="text-xs text-neutral-400 dark:text-neutral-600">
-                  {categoryCounts[key]}
-                </span>
-              </Link>
-            </li>
-          ))}
+          {(Object.keys(CATEGORIES) as Category[]).map((key) => {
+            const count = categoryCounts[key];
+            return (
+              <li key={key}>
+                <Link
+                  href={`/category/${key}`}
+                  className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition py-1"
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${catColorDot[key]}`}
+                    />
+                    {CATEGORIES[key].name}
+                  </span>
+                  {count > 0 && (
+                    <span className="text-xs text-neutral-400 dark:text-neutral-600">
+                      {count}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </section>
 

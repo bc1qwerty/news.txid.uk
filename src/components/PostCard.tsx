@@ -3,9 +3,18 @@ import { format } from "date-fns";
 import CategoryBadge from "./CategoryBadge";
 import type { PostMeta } from "@/lib/posts";
 
+const topBorder: Record<string, string> = {
+  bitcoin: "border-t-[#F7931A]/40",
+  macro: "border-t-[#3B82F6]/40",
+  politics: "border-t-[#8B5CF6]/40",
+  opinion: "border-t-[#10B981]/40",
+};
+
 export default function PostCard({ post }: { post: PostMeta }) {
+  const accent = topBorder[post.category] || "";
+
   return (
-    <article className="group border border-neutral-200 dark:border-border rounded-xl overflow-hidden bg-white dark:bg-surface hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors">
+    <article className={`group border border-neutral-200 dark:border-border border-t-2 ${accent} rounded-xl overflow-hidden bg-white dark:bg-surface hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors`}>
       <Link href={`/post/${post.slug}`} className="block p-5">
         <div className="flex items-center gap-3 mb-3">
           <CategoryBadge category={post.category} linked={false} />

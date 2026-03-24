@@ -16,11 +16,14 @@ interface PostItem {
   draft: boolean;
 }
 
+type Filter = "all" | "drafts" | "published" | Category;
+
 export default function AdminPage() {
   const { user, loading, refresh } = useAuth();
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [error, setError] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
 
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -37,7 +40,7 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-20 text-center text-neutral-400">
+      <div className="max-w-6xl mx-auto px-4 py-20 text-center text-neutral-400">
         Loading...
       </div>
     );
@@ -53,20 +56,35 @@ export default function AdminPage() {
 
   if (!user.isAdmin) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-20 text-center">
+      <div className="max-w-6xl mx-auto px-4 py-20 text-center">
         <p className="text-neutral-400">Admin access required.</p>
       </div>
     );
   }
 
+  /* ── Stats ── */
+  const total = posts.length;
   const drafts = posts.filter((p) => p.draft);
   const published = posts.filter((p) => !p.draft);
+  const catCounts: Record<string, number> = {};
+  for (const key of Object.keys(CATEGORIES)) {
+    catCounts[key] = posts.filter((p) => p.category === key && !p.draft).length;
+  }
+
+  /* ── Filtered list ── */
+  const filtered = posts.filter((p) => {
+    if (filter === "all") return true;
+    if (filter === "drafts") return p.draft;
+    if (filter === "published") return !p.draft;
+    return p.category === filter;
+  });
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
-          Admin
+          Dashboard
         </h1>
         <Link
           href="/admin/editor"
@@ -76,89 +94,223 @@ export default function AdminPage() {
         </Link>
       </div>
 
-      {error && (
-        <p className="text-red-400 text-sm mb-4">{error}</p>
-      )}
+      {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
       {loadingPosts ? (
-        <p className="text-neutral-400 text-center py-12">Loading posts...</p>
+        <p className="text-neutral-400 text-center py-12">Loading...</p>
       ) : (
         <>
-          {/* Drafts */}
-          <section className="mb-10">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
-              Drafts ({drafts.length})
-            </h2>
-            {drafts.length === 0 ? (
-              <p className="text-neutral-400 py-6 text-center border border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl text-sm">
-                No drafts
-              </p>
-            ) : (
-              <ul className="space-y-3">
-                {drafts.map((p) => (
-                  <PostRow key={p.slug} post={p} />
-                ))}
-              </ul>
+          {/* ── Stats Cards ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">
+            <StatCard
+              label="Total"
+              count={total}
+              active={filter === "all"}
+              onClick={() => setFilter("all")}
+            />
+            <StatCard
+              label="Published"
+              count={published.length}
+              color="#22c55e"
+              active={filter === "published"}
+              onClick={() => setFilter("published")}
+            />
+            <StatCard
+              label="Drafts"
+              count={drafts.length}
+              color="#f59e0b"
+              active={filter === "drafts"}
+              onClick={() => setFilter("drafts")}
+            />
+            {(Object.entries(CATEGORIES) as [Category, typeof CATEGORIES[Category]][]).map(
+              ([key, val]) => (
+                <StatCard
+                  key={key}
+                  label={val.name}
+                  count={catCounts[key] || 0}
+                  color={val.color}
+                  active={filter === key}
+                  onClick={() => setFilter(key)}
+                />
+              )
             )}
-          </section>
+          </div>
 
-          {/* Published */}
-          <section>
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
-              Published ({published.length})
+          {/* ── Filter label ── */}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-medium text-neutral-500 dark:text-muted">
+              {filter === "all"
+                ? "All Posts"
+                : filter === "drafts"
+                ? "Drafts"
+                : filter === "published"
+                ? "Published"
+                : CATEGORIES[filter as Category]?.name}{" "}
+              ({filtered.length})
             </h2>
-            {published.length === 0 ? (
-              <p className="text-neutral-400 py-6 text-center border border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl text-sm">
-                No published posts
-              </p>
-            ) : (
-              <ul className="space-y-3">
-                {published.map((p) => (
+            {filter !== "all" && (
+              <button
+                onClick={() => setFilter("all")}
+                className="text-xs text-neutral-400 hover:text-bitcoin transition"
+              >
+                Clear filter
+              </button>
+            )}
+          </div>
+
+          {/* ── Post Table ── */}
+          {filtered.length === 0 ? (
+            <div className="text-neutral-400 py-12 text-center border border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl text-sm">
+              No posts
+            </div>
+          ) : (
+            <div className="border border-neutral-200 dark:border-border rounded-xl overflow-hidden">
+              {/* Table header — desktop */}
+              <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_80px] gap-4 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900/50 text-xs font-medium text-neutral-500 dark:text-muted border-b border-neutral-200 dark:border-border">
+                <span>Title</span>
+                <span>Category</span>
+                <span>Date</span>
+                <span>Status</span>
+                <span className="text-right">Actions</span>
+              </div>
+
+              <ul className="divide-y divide-neutral-200 dark:divide-border">
+                {filtered.map((p) => (
                   <PostRow key={p.slug} post={p} />
                 ))}
               </ul>
-            )}
-          </section>
+            </div>
+          )}
         </>
       )}
     </div>
   );
 }
 
+/* ── Stats Card ── */
+function StatCard({
+  label,
+  count,
+  color,
+  active,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  color?: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`p-3 rounded-xl border text-left transition ${
+        active
+          ? "border-bitcoin bg-bitcoin/5"
+          : "border-neutral-200 dark:border-border bg-white dark:bg-surface hover:border-neutral-300 dark:hover:border-neutral-600"
+      }`}
+    >
+      <div
+        className="text-2xl font-bold"
+        style={{ color: active ? (color || "#F7931A") : undefined }}
+      >
+        {count}
+      </div>
+      <div className="text-xs text-neutral-500 dark:text-muted mt-0.5">
+        {label}
+      </div>
+      {color && (
+        <div
+          className="w-full h-0.5 rounded mt-2"
+          style={{ background: color, opacity: active ? 1 : 0.3 }}
+        />
+      )}
+    </button>
+  );
+}
+
+/* ── Post Row ── */
 function PostRow({ post }: { post: PostItem }) {
   const cat = CATEGORIES[post.category];
   return (
-    <li>
-      <Link
-        href={`/admin/editor?slug=${post.slug}`}
-        className="block p-4 rounded-xl border border-neutral-200 dark:border-border bg-white dark:bg-surface hover:border-bitcoin/50 transition-colors"
-      >
-        <div className="flex items-center gap-3 mb-1">
+    <li className="hover:bg-neutral-50 dark:hover:bg-surface-hover transition-colors">
+      {/* Mobile layout */}
+      <div className="md:hidden p-4">
+        <div className="flex items-center gap-2 mb-1.5">
           {post.draft && (
-            <span className="text-xs px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
+            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
               DRAFT
             </span>
           )}
           <span
-            className="text-xs px-2 py-0.5 rounded font-medium"
-            style={{
-              color: cat?.color || "#999",
-              background: `${cat?.color || "#999"}18`,
-            }}
+            className="text-xs px-1.5 py-0.5 rounded font-medium"
+            style={{ color: cat?.color, background: `${cat?.color}18` }}
           >
-            {cat?.name || post.category}
+            {cat?.name}
           </span>
-          <span className="text-xs text-neutral-400">{post.date}</span>
+          <span className="text-xs text-neutral-400 ml-auto">{post.date}</span>
         </div>
-        <h3 className="font-medium text-neutral-900 dark:text-white">
+        <Link
+          href={`/admin/editor?slug=${post.slug}`}
+          className="font-medium text-neutral-900 dark:text-white hover:text-bitcoin transition text-sm"
+        >
           {post.title}
-        </h3>
+        </Link>
         {post.summary && (
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-1">
-            {post.summary}
-          </p>
+          <p className="text-xs text-neutral-400 mt-1 line-clamp-1">{post.summary}</p>
         )}
-      </Link>
+      </div>
+
+      {/* Desktop layout */}
+      <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_80px] gap-4 px-4 py-3 items-center">
+        <div className="min-w-0">
+          <Link
+            href={`/admin/editor?slug=${post.slug}`}
+            className="font-medium text-neutral-900 dark:text-white hover:text-bitcoin transition text-sm truncate block"
+          >
+            {post.title}
+          </Link>
+          {post.summary && (
+            <p className="text-xs text-neutral-400 mt-0.5 truncate">{post.summary}</p>
+          )}
+        </div>
+        <span
+          className="text-xs px-2 py-0.5 rounded font-medium w-fit"
+          style={{ color: cat?.color, background: `${cat?.color}18` }}
+        >
+          {cat?.name}
+        </span>
+        <span className="text-xs text-neutral-400 font-mono">{post.date}</span>
+        <span>
+          {post.draft ? (
+            <span className="text-xs px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
+              Draft
+            </span>
+          ) : (
+            <span className="text-xs px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
+              Live
+            </span>
+          )}
+        </span>
+        <div className="flex items-center justify-end gap-2">
+          <Link
+            href={`/admin/editor?slug=${post.slug}`}
+            className="text-xs text-neutral-400 hover:text-bitcoin transition"
+            title="Edit"
+          >
+            Edit
+          </Link>
+          <a
+            href={post.draft ? `/draft/${post.slug}` : `/post/${post.slug}`}
+            target="_blank"
+            rel="noopener"
+            className="text-xs text-neutral-400 hover:text-bitcoin transition"
+            title="View"
+          >
+            View
+          </a>
+        </div>
+      </div>
     </li>
   );
 }

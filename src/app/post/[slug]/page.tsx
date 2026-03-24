@@ -10,6 +10,7 @@ import ShareButtons from "@/components/ShareButtons";
 import Sidebar from "@/components/Sidebar";
 import LeftSidebar from "@/components/LeftSidebar";
 import ReadingProgress from "@/components/ReadingProgress";
+import StickyTOC from "@/components/StickyTOC";
 import TableOfContents from "@/components/TableOfContents";
 import { extractHeadings } from "@/lib/toc";
 import RelatedPosts from "@/components/RelatedPosts";
@@ -148,18 +149,23 @@ export default async function PostPage({
       />
       <ReadingProgress />
 
-      <div className="max-w-[1400px] mx-auto px-4 py-8">
+      <div className="max-w-[1600px] mx-auto px-4 py-8">
         <div
           className={`lg:grid lg:gap-8 ${
             hasTOC
-              ? "xl:grid-cols-[220px_1fr_340px] lg:grid-cols-[1fr_320px]"
-              : "lg:grid-cols-[1fr_320px]"
+              ? "2xl:grid-cols-[200px_180px_1fr_340px] xl:grid-cols-[200px_1fr_340px] lg:grid-cols-[1fr_320px]"
+              : "xl:grid-cols-[200px_1fr_340px] lg:grid-cols-[1fr_320px]"
           }`}
         >
-          {/* Left: TOC + Sidebar info — xl only */}
+          {/* Col 1: Sidebar widgets — xl only */}
+          <div className="hidden xl:block">
+            <LeftSidebar currentSlug={post.slug} />
+          </div>
+
+          {/* Col 2: TOC — 2xl only */}
           {hasTOC && (
-            <div className="hidden xl:block">
-              <LeftSidebar headings={headings} hasTOC={hasTOC} currentSlug={post.slug} />
+            <div className="hidden 2xl:block">
+              <StickyTOC headings={headings} />
             </div>
           )}
 
@@ -204,9 +210,9 @@ export default async function PostPage({
               </div>
             </header>
 
-            {/* Collapsible TOC — below xl fallback */}
+            {/* Collapsible TOC — below 2xl fallback */}
             {hasTOC && (
-              <div className="xl:hidden">
+              <div className="2xl:hidden">
                 <TableOfContents headings={headings} />
               </div>
             )}
@@ -258,7 +264,7 @@ export default async function PostPage({
               sourceUrl={`/post/${post.slug}`}
               sourceSite="news"
             />
-            {/* Sidebar fallback for non-xl (below discussion on lg) */}
+            {/* Sidebar fallback for lg (no left column) */}
             <div className="xl:hidden mt-8">
               <Sidebar currentSlug={post.slug} />
             </div>
