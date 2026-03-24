@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "slug": "2026-03-25-onchain-whale-accumulation",
+    "title": "On-Chain Signals: Whales Accumulate While Retail Capitulates",
+    "date": "2026-03-25",
+    "category": "bitcoin",
+    "summary": "A record 20,031 wallets now hold at least 100 BTC. Whales have added 56,227 BTC since December while exchange outflows hit the strongest pace since November 2024. Long-term holders accumulated over 375,000 BTC in 30 days. The supply is tightening — and the data says smart money is loading up."
+  },
+  {
+    "slug": "2026-03-25-miners-crisis-ai-pivot",
+    "title": "Miners in Crisis: Losing $19,000 Per Coin While the Industry Pivots to AI",
+    "date": "2026-03-25",
+    "category": "bitcoin",
+    "summary": "Bitcoin miners are losing approximately $19,000 on every BTC produced as average costs of $88,000 exceed a market price near $71,000. Mining difficulty dropped 7.76% on March 21 — the second-largest decline of 2026 — as public miners liquidate reserves and convert facilities to AI data centers."
+  },
+  {
+    "slug": "2026-03-25-lightning-privacy-fast-not-private",
+    "title": "Lightning Is Fast, But Is It Private?",
+    "date": "2026-03-25",
+    "category": "opinion",
+    "summary": "Academic research shows that controlling just 2% of Lightning Network nodes is enough to deanonymize payments. Node IP addresses, payment metadata, and custodial service records provide multiple attack vectors for state-level surveillance. As Lightning adoption accelerates, its privacy model deserves honest scrutiny."
+  },
+  {
+    "slug": "2026-03-25-iran-hormuz-oil-bitcoin",
+    "title": "Trump's Iran Ultimatum: Hormuz, $112 Oil, and Bitcoin's Risk-Asset Reality",
+    "date": "2026-03-25",
+    "category": "macro",
+    "summary": "Iran closed the Strait of Hormuz on March 4. Trump issued a 48-hour ultimatum. Brent crude spiked above $112 before crashing 11% to $99.94. Bitcoin fell to $68,241 as $1 billion in crypto positions were liquidated. The 89% correlation with the S&P 500 confirms: Bitcoin still trades like a risk asset when bombs are on the table."
+  },
+  {
+    "slug": "2026-03-25-hot-ppi-rate-cuts-dead",
+    "title": "Hot PPI, Cold Reality: Why Rate Cuts May Be Dead for 2026",
+    "date": "2026-03-25",
+    "category": "macro",
+    "summary": "February PPI surged 0.7% month-over-month — more than double expectations — with core wholesale inflation hitting 3.9% annually. The March FOMC dot plot now projects just one cut in 2026. Futures traders have pushed the next rate cut to December at the earliest. The 'higher for longer' era may extend into 2027."
+  },
+  {
+    "slug": "2026-03-25-hong-kong-stablecoin-license",
+    "title": "Hong Kong Issues First Stablecoin Licenses: HSBC and Standard Chartered Lead the Pack",
+    "date": "2026-03-25",
+    "category": "politics",
+    "summary": "Hong Kong's monetary authority is granting its first stablecoin licenses to HSBC and a Standard Chartered-led joint venture — the same banks that already print the city's physical banknotes. With 36 applications filed under the Stablecoins Ordinance, Hong Kong is positioning itself as Asia's regulated stablecoin hub."
+  },
+  {
+    "slug": "2026-03-25-clarity-act-stablecoin-law",
+    "title": "The CLARITY Act Breakthrough: How a Stablecoin Yield Deal Could Deliver Crypto's First Market Structure Law",
+    "date": "2026-03-25",
+    "category": "politics",
+    "summary": "Senators Tillis and Alsobrooks reached a bipartisan deal on stablecoin yield — the provision that stalled crypto's most important bill. The CLARITY Act, building on the already-enacted GENIUS Act, would create the first comprehensive digital asset market structure framework. Senate Banking Committee markup is targeted for late April."
+  },
+  {
+    "slug": "2026-03-25-china-ecny-interest-cbdc",
+    "title": "Interest-Bearing CBDCs vs Bitcoin: China's Digital Yuan Breaks Every Rule in the Playbook",
+    "date": "2026-03-25",
+    "category": "opinion",
+    "summary": "On January 1, 2026, China's digital yuan became the world's first interest-bearing CBDC. Verified wallet balances now accrue interest at demand deposit rates with quarterly settlement. With 230 million wallets and 16.7 trillion yuan in cumulative transactions, the e-CNY is no longer digital cash — it is programmable deposit money under state surveillance."
+  },
+  {
+    "slug": "2026-03-25-bitcoin-etf-56b-diamond-hands",
+    "title": "Bitcoin ETFs at $65 Billion: Institutions Diamond-Handing Through the Storm",
+    "date": "2026-03-25",
+    "category": "bitcoin",
+    "summary": "US spot Bitcoin ETFs have crossed $65 billion in cumulative net inflows, with $18.7 billion added in Q1 2026 alone. BlackRock's IBIT commands 45% market share. Institutional ownership reached 38% of total ETF assets. Through a 50% price decline and geopolitical turmoil, institutions held firm."
+  }
+]
