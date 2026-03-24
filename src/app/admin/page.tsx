@@ -24,6 +24,34 @@ export default function AdminPage() {
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [busySlug, setBusySlug] = useState<string | null>(null);
+
+  const togglePublish = async (slug: string, currentlyDraft: boolean) => {
+    if (busySlug) return;
+    const action = currentlyDraft ? "publish" : "unpublish";
+    if (!currentlyDraft && !confirm("Revert to draft?")) return;
+    setBusySlug(slug);
+    try {
+      const res = await fetch(`${API_URL}/news/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ slug }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPosts((prev) =>
+          prev.map((p) => (p.slug === slug ? { ...p, draft: !currentlyDraft } : p))
+        );
+      } else {
+        alert(data.error || `Failed to ${action}`);
+      }
+    } catch {
+      alert("Network error");
+    } finally {
+      setBusySlug(null);
+    }
+  };
 
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -166,7 +194,7 @@ export default function AdminPage() {
           ) : (
             <div className="border border-neutral-200 dark:border-border rounded-xl overflow-hidden">
               {/* Table header — desktop */}
-              <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_80px] gap-4 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900/50 text-xs font-medium text-neutral-500 dark:text-muted border-b border-neutral-200 dark:border-border">
+              <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_140px] gap-4 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900/50 text-xs font-medium text-neutral-500 dark:text-muted border-b border-neutral-200 dark:border-border">
                 <span>Title</span>
                 <span>Category</span>
                 <span>Date</span>
@@ -176,7 +204,7 @@ export default function AdminPage() {
 
               <ul className="divide-y divide-neutral-200 dark:divide-border">
                 {filtered.map((p) => (
-                  <PostRow key={p.slug} post={p} />
+                  <PostRow key={p.slug} post={p} busySlug={busySlug} onToggle={togglePublish} />
                 ))}
               </ul>
             </div>
@@ -230,16 +258,21 @@ function StatCard({
 }
 
 /* ── Post Row ── */
-function PostRow({ post }: { post: PostItem }) {
+function PostRow({ post, busySlug, onToggle }: { post: PostItem; busySlug: string | null; onToggle: (slug: string, draft: boolean) => void }) {
   const cat = CATEGORIES[post.category];
+  const busy = busySlug === post.slug;
   return (
     <li className="hover:bg-neutral-50 dark:hover:bg-surface-hover transition-colors">
       {/* Mobile layout */}
       <div className="md:hidden p-4">
         <div className="flex items-center gap-2 mb-1.5">
-          {post.draft && (
+          {post.draft ? (
             <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
               DRAFT
+            </span>
+          ) : (
+            <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
+              Live
             </span>
           )}
           <span
@@ -256,13 +289,24 @@ function PostRow({ post }: { post: PostItem }) {
         >
           {post.title}
         </Link>
-        {post.summary && (
-          <p className="text-xs text-neutral-400 mt-1 line-clamp-1">{post.summary}</p>
-        )}
+        <div className="flex items-center gap-2 mt-2">
+          <button
+            onClick={() => onToggle(post.slug, post.draft)}
+            disabled={!!busySlug}
+            className={`text-xs px-3 py-1 rounded font-medium transition disabled:opacity-50 ${
+              post.draft
+                ? "bg-bitcoin text-white hover:bg-bitcoin-dark"
+                : "border border-amber-400 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+            }`}
+          >
+            {busy ? "..." : post.draft ? "Publish" : "Unpublish"}
+          </button>
+          <Link href={`/admin/editor?slug=${post.slug}`} className="text-xs text-neutral-400 hover:text-bitcoin transition">Edit</Link>
+        </div>
       </div>
 
       {/* Desktop layout */}
-      <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_80px] gap-4 px-4 py-3 items-center">
+      <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_140px] gap-4 px-4 py-3 items-center">
         <div className="min-w-0">
           <Link
             href={`/admin/editor?slug=${post.slug}`}
@@ -293,22 +337,23 @@ function PostRow({ post }: { post: PostItem }) {
           )}
         </span>
         <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => onToggle(post.slug, post.draft)}
+            disabled={!!busySlug}
+            className={`text-xs px-2.5 py-1 rounded font-medium transition disabled:opacity-50 ${
+              post.draft
+                ? "bg-bitcoin text-white hover:bg-bitcoin-dark"
+                : "border border-amber-400 text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+            }`}
+          >
+            {busy ? "..." : post.draft ? "Publish" : "Unpublish"}
+          </button>
           <Link
             href={`/admin/editor?slug=${post.slug}`}
             className="text-xs text-neutral-400 hover:text-bitcoin transition"
-            title="Edit"
           >
             Edit
           </Link>
-          <a
-            href={post.draft ? `/draft/${post.slug}` : `/post/${post.slug}`}
-            target="_blank"
-            rel="noopener"
-            className="text-xs text-neutral-400 hover:text-bitcoin transition"
-            title="View"
-          >
-            View
-          </a>
         </div>
       </div>
     </li>
