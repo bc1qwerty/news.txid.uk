@@ -246,8 +246,8 @@ function EditorContent() {
         </div>
       </div>
 
-      {/* Meta fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      {/* Meta fields — row 1: title + slug */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <div>
           <label className="ed-label">Title</label>
           <input
@@ -269,6 +269,10 @@ function EditorContent() {
             disabled={!!editSlug}
           />
         </div>
+      </div>
+
+      {/* Meta fields — row 2: date/time + category */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_160px] gap-3 mb-4">
         <div>
           <label className="ed-label">Date & Time</label>
           <div className="flex gap-1.5 items-center">
@@ -276,14 +280,14 @@ function EditorContent() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="ed-input flex-1"
+              className="ed-input"
             />
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
               placeholder="HH:MM"
-              className="ed-input w-24"
+              className="ed-input w-28"
             />
             <button
               type="button"
@@ -292,7 +296,7 @@ function EditorContent() {
                 setDate(now.toISOString().split("T")[0]);
                 setTime(now.toTimeString().slice(0, 5));
               }}
-              className="px-2 py-1.5 rounded border border-neutral-300 dark:border-border text-xs text-neutral-500 hover:text-bitcoin hover:border-bitcoin/50 transition whitespace-nowrap"
+              className="px-3 py-1.5 rounded border border-neutral-300 dark:border-border text-xs text-neutral-500 hover:text-bitcoin hover:border-bitcoin/50 transition whitespace-nowrap"
               title="Set to current date and time"
             >
               Now
