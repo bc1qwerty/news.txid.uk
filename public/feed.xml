@@ -5,8 +5,16 @@
     <link>https://news.txid.uk</link>
     <description>Bitcoin, Macro Economics &amp; Politics — Independent Analysis</description>
     <language>en</language>
-    <lastBuildDate>Tue, 24 Mar 2026 06:13:24 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 24 Mar 2026 15:33:08 GMT</lastBuildDate>
     <atom:link href="https://news.txid.uk/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title><![CDATA[Bitcoin's 20 Millionth Coin Has Been Mined. Only 1 Million Remain.]]></title>
+      <link>https://news.txid.uk/post/2026-03-25-bitcoin-20-million-mined</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-25-bitcoin-20-million-mined</guid>
+      <pubDate>Wed, 25 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[On March 10, 2026, the 20 millionth bitcoin was mined. 95.24% of all bitcoin that will ever exist is now in circulation. The remaining 1 million BTC will take 114 years to mine — and a significant fraction of what's already been mined is gone forever.]]></description>
+      <category>bitcoin</category>
+    </item>
     <item>
       <title><![CDATA[Crypto Finally Has a Rulebook: What the SEC-CFTC Joint Guidance Means]]></title>
       <link>https://news.txid.uk/post/2026-03-24-sec-cftc-crypto-rulebook</link>
@@ -38,6 +46,70 @@
       <pubDate>Mon, 23 Mar 2026 00:00:00 GMT</pubDate>
       <description><![CDATA[Starting March 30, Block's Square will enable Bitcoin Lightning payments by default across 4 million merchants worldwide. Zero fees through 2026, instant settlement, no chargebacks. This is the largest single merchant onboarding event in Lightning Network history.]]></description>
       <category>bitcoin</category>
+    </item>
+    <item>
+      <title><![CDATA[The Halving Aftermath: One Year of Reduced Supply]]></title>
+      <link>https://news.txid.uk/post/2026-03-22-halving-one-year-later</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-22-halving-one-year-later</guid>
+      <pubDate>Sun, 22 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[April 2025's fourth halving cut the block reward from 6.25 to 3.125 BTC. One year in, the supply shock is measurable: 164,250 fewer BTC created than the prior year. Miners adapted, price responded, and the network barely noticed.]]></description>
+      <category>bitcoin</category>
+    </item>
+    <item>
+      <title><![CDATA[The Lightning Economy Is Already Here]]></title>
+      <link>https://news.txid.uk/post/2026-03-21-lightning-economy-already-here</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-21-lightning-economy-already-here</guid>
+      <pubDate>Sat, 21 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[While skeptics debate whether Lightning 'works,' a parallel economy is quietly operating on it. Nostr zaps, Podcasting 2.0 streaming sats, merchant payments in El Salvador, and cross-border remittances — the Lightning economy is not theoretical. It's running.]]></description>
+      <category>opinion</category>
+    </item>
+    <item>
+      <title><![CDATA[Japan's YCC Exit and the Global Liquidity Squeeze]]></title>
+      <link>https://news.txid.uk/post/2026-03-21-japan-ycce-exit-liquidity</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-21-japan-ycce-exit-liquidity</guid>
+      <pubDate>Sat, 21 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[The Bank of Japan officially abandoned yield curve control in January 2026, letting 10-year JGB yields rise to 1.8%. The resulting yen carry trade unwind is draining global liquidity — and Bitcoin is caught in the crossflow.]]></description>
+      <category>macro</category>
+    </item>
+    <item>
+      <title><![CDATA[EU's MiCA Enforcement Begins: Winners, Losers, and Unintended Consequences]]></title>
+      <link>https://news.txid.uk/post/2026-03-20-eu-mica-enforcement</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-20-eu-mica-enforcement</guid>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[The Markets in Crypto-Assets Regulation is now fully enforced across all 27 EU member states. Three months in, the effects are visible: compliant exchanges are gaining share, Tether faces an existential European challenge, and DeFi protocols are routing around the rules entirely.]]></description>
+      <category>politics</category>
+    </item>
+    <item>
+      <title><![CDATA[Bitcoin Hashrate Hits 800 EH/s: What It Means for Network Security]]></title>
+      <link>https://news.txid.uk/post/2026-03-20-bitcoin-hashrate-800eh</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-20-bitcoin-hashrate-800eh</guid>
+      <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Bitcoin's hashrate crossed 800 exahashes per second for the first time on March 18, doubling from 400 EH/s just eighteen months ago. Behind the headline number lies a structural shift in mining geography, hardware efficiency, and what it means for Bitcoin's security model.]]></description>
+      <category>bitcoin</category>
+    </item>
+    <item>
+      <title><![CDATA[Dollar Milkshake Theory in 2026: Is DXY Divergence Bullish for Bitcoin?]]></title>
+      <link>https://news.txid.uk/post/2026-03-19-dollar-milkshake-bitcoin</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-19-dollar-milkshake-bitcoin</guid>
+      <pubDate>Thu, 19 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[The US Dollar Index has climbed to 108 as global capital flows toward US assets amid geopolitical uncertainty. Brent Santiago's 'milkshake theory' predicted this — but its implications for Bitcoin are more nuanced than bulls or bears admit.]]></description>
+      <category>macro</category>
+    </item>
+    <item>
+      <title><![CDATA[US Strategic Bitcoin Reserve: Executive Order 14178 Six Months In]]></title>
+      <link>https://news.txid.uk/post/2026-03-18-us-strategic-bitcoin-reserve</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-18-us-strategic-bitcoin-reserve</guid>
+      <pubDate>Wed, 18 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Six months after President Trump signed Executive Order 14178 establishing the Strategic Bitcoin Reserve, the US government holds approximately 207,000 BTC from seizures. The policy is clear: never sell. The debate is whether to buy more — and how to pay for it.]]></description>
+      <category>politics</category>
+    </item>
+    <item>
+      <title><![CDATA[Self-Custody Is Not Optional]]></title>
+      <link>https://news.txid.uk/post/2026-03-17-self-custody-not-optional</link>
+      <guid isPermaLink="true">https://news.txid.uk/post/2026-03-17-self-custody-not-optional</guid>
+      <pubDate>Tue, 17 Mar 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[From Mt. Gox to FTX, the lesson is always the same: if you don't hold the keys, you don't hold the Bitcoin. After $25 billion in cumulative exchange losses, treating self-custody as an advanced feature rather than the default is indefensible.]]></description>
+      <category>opinion</category>
     </item>
   </channel>
 </rss>
