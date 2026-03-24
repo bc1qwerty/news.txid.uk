@@ -23,6 +23,7 @@ function EditorContent() {
   const [date, setDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [time, setTime] = useState("");
   const [category, setCategory] = useState<Category>("bitcoin");
   const [tagsInput, setTagsInput] = useState("");
   const [summary, setSummary] = useState("");
@@ -52,7 +53,14 @@ function EditorContent() {
       .then((d) => {
         setTitle(d.title || "");
         setSlug(editSlug);
-        setDate(d.date || "");
+        const rawDate = d.date || "";
+        if (rawDate.includes("T")) {
+          setDate(rawDate.split("T")[0]);
+          setTime(rawDate.split("T")[1].slice(0, 5));
+        } else {
+          setDate(rawDate);
+          setTime("");
+        }
         setCategory(d.category || "opinion");
         setTagsInput((d.tags || []).join(", "));
         setSummary(d.summary || "");
@@ -101,7 +109,7 @@ function EditorContent() {
           credentials: "include",
           body: JSON.stringify({
             title,
-            date,
+            date: time ? `${date}T${time}` : date,
             category,
             tags,
             summary,
@@ -262,13 +270,34 @@ function EditorContent() {
           />
         </div>
         <div>
-          <label className="ed-label">Date</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="ed-input"
-          />
+          <label className="ed-label">Date & Time</label>
+          <div className="flex gap-1.5 items-center">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="ed-input flex-1"
+            />
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              placeholder="HH:MM"
+              className="ed-input w-24"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const now = new Date();
+                setDate(now.toISOString().split("T")[0]);
+                setTime(now.toTimeString().slice(0, 5));
+              }}
+              className="px-2 py-1.5 rounded border border-neutral-300 dark:border-border text-xs text-neutral-500 hover:text-bitcoin hover:border-bitcoin/50 transition whitespace-nowrap"
+              title="Set to current date and time"
+            >
+              Now
+            </button>
+          </div>
         </div>
         <div>
           <label className="ed-label">Category</label>
