@@ -137,7 +137,7 @@ function EditorContent() {
         setSaving(false);
       }
     },
-    [title, content, slug, tagsInput, date, category, summary, author, sha, user, editSlug, router]
+    [title, content, slug, tagsInput, date, time, category, summary, author, sha, user, editSlug, router]
   );
 
   /* ── Delete ── */
