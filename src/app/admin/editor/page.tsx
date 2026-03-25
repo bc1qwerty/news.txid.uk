@@ -124,7 +124,11 @@ function EditorContent() {
         if (res.ok) {
           setSha(data.sha);
           setIsDraft(asDraft);
-          setMsg({ text: asDraft ? "Saved as draft" : "Published", ok: true });
+          if (!asDraft) {
+            router.push("/admin");
+            return;
+          }
+          setMsg({ text: "Saved as draft", ok: true });
           if (!editSlug) {
             router.replace(`/admin/editor?slug=${slug}`);
           }

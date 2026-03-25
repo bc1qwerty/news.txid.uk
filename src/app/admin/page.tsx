@@ -16,15 +16,25 @@ interface PostItem {
   draft: boolean;
 }
 
-type Filter = "all" | "drafts" | "published" | Category;
+type FilterTag = "drafts" | "published" | Category;
 
 export default function AdminPage() {
   const { user, loading, refresh } = useAuth();
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filters, setFilters] = useState<Set<FilterTag>>(new Set());
   const [busySlug, setBusySlug] = useState<string | null>(null);
+
+  const toggleFilter = (tag: FilterTag) => {
+    setFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) next.delete(tag);
+      else next.add(tag);
+      return next;
+    });
+  };
+  const clearFilters = () => setFilters(new Set());
 
   const togglePublish = async (slug: string, currentlyDraft: boolean) => {
     if (busySlug) return;
@@ -96,16 +106,25 @@ export default function AdminPage() {
   const published = posts.filter((p) => !p.draft);
   const catCounts: Record<string, number> = {};
   for (const key of Object.keys(CATEGORIES)) {
-    catCounts[key] = posts.filter((p) => p.category === key && !p.draft).length;
+    catCounts[key] = posts.filter((p) => p.category === key).length;
   }
 
-  /* ── Filtered list ── */
+  /* ── Filtered list (multi-select: AND between status + category) ── */
   const filtered = posts.filter((p) => {
-    if (filter === "all") return true;
-    if (filter === "drafts") return p.draft;
-    if (filter === "published") return !p.draft;
-    return p.category === filter;
+    if (filters.size === 0) return true;
+    const statusTags = new Set([...filters].filter((f) => f === "drafts" || f === "published"));
+    const catTags = new Set([...filters].filter((f) => f !== "drafts" && f !== "published"));
+    const passStatus = statusTags.size === 0
+      || (statusTags.has("drafts") && p.draft)
+      || (statusTags.has("published") && !p.draft);
+    const passCat = catTags.size === 0 || catTags.has(p.category);
+    return passStatus && passCat;
   });
+
+  /* ── Filter label ── */
+  const filterLabel = filters.size === 0
+    ? "All Posts"
+    : [...filters].map((f) => f === "drafts" ? "Drafts" : f === "published" ? "Published" : CATEGORIES[f as Category]?.name || f).join(" + ");
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -133,22 +152,22 @@ export default function AdminPage() {
             <StatCard
               label="Total"
               count={total}
-              active={filter === "all"}
-              onClick={() => setFilter("all")}
+              active={filters.size === 0}
+              onClick={clearFilters}
             />
             <StatCard
               label="Published"
               count={published.length}
               color="#22c55e"
-              active={filter === "published"}
-              onClick={() => setFilter("published")}
+              active={filters.has("published")}
+              onClick={() => toggleFilter("published")}
             />
             <StatCard
               label="Drafts"
               count={drafts.length}
               color="#f59e0b"
-              active={filter === "drafts"}
-              onClick={() => setFilter("drafts")}
+              active={filters.has("drafts")}
+              onClick={() => toggleFilter("drafts")}
             />
             {(Object.entries(CATEGORIES) as [Category, typeof CATEGORIES[Category]][]).map(
               ([key, val]) => (
@@ -157,8 +176,8 @@ export default function AdminPage() {
                   label={val.name}
                   count={catCounts[key] || 0}
                   color={val.color}
-                  active={filter === key}
-                  onClick={() => setFilter(key)}
+                  active={filters.has(key)}
+                  onClick={() => toggleFilter(key)}
                 />
               )
             )}
@@ -167,18 +186,11 @@ export default function AdminPage() {
           {/* ── Filter label ── */}
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-medium text-neutral-500 dark:text-muted">
-              {filter === "all"
-                ? "All Posts"
-                : filter === "drafts"
-                ? "Drafts"
-                : filter === "published"
-                ? "Published"
-                : CATEGORIES[filter as Category]?.name}{" "}
-              ({filtered.length})
+              {filterLabel} ({filtered.length})
             </h2>
-            {filter !== "all" && (
+            {filters.size > 0 && (
               <button
-                onClick={() => setFilter("all")}
+                onClick={clearFilters}
                 className="text-xs text-neutral-400 hover:text-bitcoin transition"
               >
                 Clear filter
