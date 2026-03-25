@@ -91,12 +91,6 @@ export default function DisclaimerPage() {
           kind between the reader and the author.
         </p>
 
-        <h2>Governing Law</h2>
-        <p>
-          Any disputes arising from the use of this site shall be governed by the
-          laws of the Republic of Korea.
-        </p>
-
         <h2>Contact</h2>
         <p>
           For corrections, takedown requests, or legal inquiries, contact the
