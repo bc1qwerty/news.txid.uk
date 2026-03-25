@@ -206,7 +206,7 @@ export default function AdminPage() {
           ) : (
             <div className="border border-neutral-200 dark:border-border rounded-xl overflow-hidden">
               {/* Table header — desktop */}
-              <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_140px] gap-4 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900/50 text-xs font-medium text-neutral-500 dark:text-muted border-b border-neutral-200 dark:border-border">
+              <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_160px] gap-4 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900/50 text-xs font-medium text-neutral-500 dark:text-muted border-b border-neutral-200 dark:border-border">
                 <span>Title</span>
                 <span>Category</span>
                 <span>Date</span>
@@ -295,12 +295,14 @@ function PostRow({ post, busySlug, onToggle }: { post: PostItem; busySlug: strin
           </span>
           <span className="text-xs text-neutral-400 ml-auto">{post.date}</span>
         </div>
-        <Link
-          href={`/admin/editor?slug=${post.slug}`}
+        <a
+          href={post.draft ? `/draft/${post.slug}` : `/post/${post.slug}`}
+          target="_blank"
+          rel="noopener"
           className="font-medium text-neutral-900 dark:text-white hover:text-bitcoin transition text-sm"
         >
           {post.title}
-        </Link>
+        </a>
         <div className="flex items-center gap-2 mt-2">
           <button
             onClick={() => onToggle(post.slug, post.draft)}
@@ -318,14 +320,16 @@ function PostRow({ post, busySlug, onToggle }: { post: PostItem; busySlug: strin
       </div>
 
       {/* Desktop layout */}
-      <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_140px] gap-4 px-4 py-3 items-center">
+      <div className="hidden md:grid grid-cols-[1fr_100px_100px_90px_160px] gap-4 px-4 py-3 items-center">
         <div className="min-w-0">
-          <Link
-            href={`/admin/editor?slug=${post.slug}`}
+          <a
+            href={post.draft ? `/draft/${post.slug}` : `/post/${post.slug}`}
+            target="_blank"
+            rel="noopener"
             className="font-medium text-neutral-900 dark:text-white hover:text-bitcoin transition text-sm truncate block"
           >
             {post.title}
-          </Link>
+          </a>
           {post.summary && (
             <p className="text-xs text-neutral-400 mt-0.5 truncate">{post.summary}</p>
           )}
