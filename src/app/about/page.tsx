@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/constants";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "About TXID News — independent Bitcoin, macro, and politics analysis.",
+    "About TXID News — an independent personal blog covering Bitcoin, macro economics, and politics.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "About | TXID News",
     description:
-      "About TXID News — independent Bitcoin, macro, and politics analysis.",
+      "About TXID News — an independent personal blog covering Bitcoin, macro economics, and politics.",
     url: `${SITE_URL}/about`,
   },
 };
@@ -25,15 +26,16 @@ export default function AboutPage() {
 
       <div className="prose prose-lg max-w-none">
         <p>
-          <strong>TXID News</strong> is an independent blog focused on Bitcoin,
-          macro economics, and the political landscape surrounding sound money.
+          <strong>TXID News</strong> is an independent personal blog offering
+          analysis and commentary on Bitcoin, macro economics, and politics.
+          It is not a news agency, media outlet, or registered press organization.
         </p>
 
-        <h2>What We Cover</h2>
+        <h2>What This Site Covers</h2>
         <ul>
           <li>
             <strong>Bitcoin</strong> — Network fundamentals, market analysis,
-            adoption trends, and ecosystem developments. No altcoins.
+            adoption trends, and ecosystem developments.
           </li>
           <li>
             <strong>Macro Economics</strong> — Central bank policy, inflation,
@@ -42,7 +44,8 @@ export default function AboutPage() {
           </li>
           <li>
             <strong>Politics</strong> — Regulatory developments, government
-            policy, and the intersection of Bitcoin with political systems.
+            policy, and the intersection of digital assets with political
+            systems.
           </li>
           <li>
             <strong>Opinion</strong> — Editorial perspectives and long-form
@@ -50,25 +53,54 @@ export default function AboutPage() {
           </li>
         </ul>
 
-        <h2>Perspective</h2>
+        <h2>Nature of Content</h2>
         <p>
-          This is a personal blog. All analysis represents the author&apos;s
-          independent perspective and is not affiliated with any news
-          organization, financial institution, or advocacy group.
+          All articles on this site represent the personal opinions and
+          independent analysis of the author, published under the pseudonym
+          &ldquo;txid.&rdquo; This site is not affiliated with, endorsed by,
+          or connected to any news organization, financial institution,
+          government agency, or advocacy group.
+        </p>
+        <p>
+          Articles may reference publicly available data, reports, and news
+          from third-party sources. Such references are provided for
+          informational context and do not imply endorsement by or affiliation
+          with those sources.
         </p>
 
-        <h2>Disclaimer</h2>
+        <h2>Not Financial Advice</h2>
         <p>
-          The content on this site is for informational and educational purposes
-          only. Nothing here constitutes financial advice. Always do your own
-          research before making any investment decisions.
+          Nothing on this site constitutes financial, investment, tax, or legal
+          advice. The content is provided for informational and educational
+          purposes only. Readers should conduct their own research and consult
+          qualified professionals before making any financial decisions. The
+          author may hold positions in assets discussed on this site.
+        </p>
+
+        <h2>Accuracy and Corrections</h2>
+        <p>
+          Every effort is made to ensure the accuracy of the information
+          presented. However, errors may occur. If you identify a factual
+          error, please reach out and a correction will be issued promptly.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          For corrections, inquiries, or takedown requests, contact the author
+          via the{" "}
+          <a href="https://community.txid.uk">txid.uk community board</a> or
+          Nostr.
         </p>
 
         <h2>Part of txid.uk</h2>
         <p>
           TXID News is part of the{" "}
           <a href="https://txid.uk">txid.uk</a> ecosystem — a collection of
-          Bitcoin education and analysis tools.
+          Bitcoin education, analysis, and development tools.
+        </p>
+
+        <p className="text-sm text-neutral-500 mt-8">
+          See also: <Link href="/disclaimer">Disclaimer</Link>
         </p>
       </div>
     </div>

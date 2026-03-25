@@ -47,6 +47,12 @@ export default function Footer() {
             >
               About
             </Link>
+            <Link
+              href="/disclaimer"
+              className="hover:text-neutral-900 dark:hover:text-white transition"
+            >
+              Disclaimer
+            </Link>
             <a
               href="/feed.xml"
               className="hover:text-neutral-900 dark:hover:text-white transition"

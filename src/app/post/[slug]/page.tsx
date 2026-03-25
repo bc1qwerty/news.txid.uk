@@ -251,6 +251,22 @@ export default async function PostPage({
               <ShareButtons slug={post.slug} title={post.title} />
             </div>
 
+            {/* Disclaimer */}
+            <div className="mt-6 px-4 py-3 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800">
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">
+                This article represents the personal opinion of the author and
+                is for informational purposes only. It does not constitute
+                financial, investment, or legal advice. Always do your own
+                research.{" "}
+                <Link
+                  href="/disclaimer"
+                  className="underline hover:text-neutral-600 dark:hover:text-neutral-300 transition"
+                >
+                  Full disclaimer
+                </Link>
+              </p>
+            </div>
+
             {/* Subscribe CTA */}
             <SubscribeCTA />
 
