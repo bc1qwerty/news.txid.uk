@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "npm run build && npx wrangler pages deploy out --project-name=news-txid-uk --branch=main",
+    "deploy": "npm run build && npx wrangler pages deploy out --project-name=news-txid-uk --branch=main && notify-deploy.sh news.txid.uk",
     "new": "node scripts/new-post.cjs",
     "draft:push": "node scripts/push-drafts.cjs"
   },
